@@ -1,0 +1,16 @@
+{%- extends "base.html" %}
+
+{% import "bootstrap/utils.html" as utils %}
+{% import "bootstrap/wtf.html" as wtf %}
+
+{% block jumbotron %}
+  <h1>{{ _('Computational Experiments Survey') }}</h1>
+  <p>{{ _('Hello,') }}</p>
+  <p>{{ _('We are doing a survey to identify computational tools and technologies most used to design, execute, and analyze scientific experiments. For this, we would like to invite you to collaborate by answer a questionnaire with multiple choice options. Some questions require additional information. The estimated time for answering is around XX minutes. This survey was designed by PhD students of Computing Science from Universidade Federal Fluminense (UFF).') }}</p>
+  {% autoescape false %}
+  <p>{{ _('Any questions or problems please report to %(wellmor)s or %(jpimentel)s.', wellmor='<a href="mailto:wellmor@ic.uff.br?Subject=Provenance%20Survey" target="_top">wellmor@ic.uff.br</a>', jpimentel='<a href="mailto:jpimentel@ic.uff.br?Subject=Provenance%20Survey" target="_top">jpimentel@ic.uff.br</a>') }}</p>
+  {% endautoescape %}
+
+  {{wtf.quick_form(form)}}
+  {{super()}}
+{%- endblock %}

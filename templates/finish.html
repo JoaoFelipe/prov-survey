@@ -1,0 +1,15 @@
+{%- extends "base.html" %}
+
+{% import "bootstrap/utils.html" as utils %}
+
+{% block jumbotron %}
+
+  <h1>{{ _('Thank you for the answers!') }}</h1>
+
+  <p>
+    <a class="btn btn-lg btn-default" role="button"
+       href="{{ question_url('index')}}" >{{ _('Restart') }}</a>
+  </p>
+
+  {{super()}}
+{%- endblock %}

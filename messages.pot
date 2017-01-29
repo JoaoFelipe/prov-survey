@@ -1,0 +1,572 @@
+# Translations template for PROJECT.
+# Copyright (C) 2017 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2017.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2017-01-29 01:08-0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.3.4\n"
+
+#: forms.py:14
+msgid "Start"
+msgstr ""
+
+#: forms.py:19 templates/finish.html:11
+msgid "Restart"
+msgstr ""
+
+#: forms.py:20 forms.py:39 forms.py:51 forms.py:64 forms.py:76 forms.py:84
+#: forms.py:100 forms.py:117 forms.py:128 forms.py:145 forms.py:155
+#: forms.py:168 forms.py:186 forms.py:201 forms.py:210
+msgid "Next"
+msgstr ""
+
+#: forms.py:25
+msgid "No schooling completed"
+msgstr ""
+
+#: forms.py:26
+msgid "Primary School in progress"
+msgstr ""
+
+#: forms.py:27
+msgid "Primary School"
+msgstr ""
+
+#: forms.py:28
+msgid "Secondary Education in progress"
+msgstr ""
+
+#: forms.py:29
+msgid "Secondary Education"
+msgstr ""
+
+#: forms.py:30
+msgid "Associate degree in progress"
+msgstr ""
+
+#: forms.py:31
+msgid "Associate degree"
+msgstr ""
+
+#: forms.py:32
+msgid "Undergraduate degree in progress"
+msgstr ""
+
+#: forms.py:33
+msgid "Undergraduate degree"
+msgstr ""
+
+#: forms.py:34
+msgid "Masters degree in progress"
+msgstr ""
+
+#: forms.py:35
+msgid "Masters degree"
+msgstr ""
+
+#: forms.py:36
+msgid "PhD degree in progress"
+msgstr ""
+
+#: forms.py:37
+msgid "PhD degree"
+msgstr ""
+
+#: forms.py:45
+msgid "0"
+msgstr ""
+
+#: forms.py:46
+msgid "1"
+msgstr ""
+
+#: forms.py:47
+msgid "2 to 5"
+msgstr ""
+
+#: forms.py:48
+msgid "5 to 10"
+msgstr ""
+
+#: forms.py:49
+msgid "More than 10"
+msgstr ""
+
+#: forms.py:57
+msgid "Less than 1 year"
+msgstr ""
+
+#: forms.py:58
+msgid "Between 1 and 2 years"
+msgstr ""
+
+#: forms.py:59
+msgid "Between 2 and 5 years"
+msgstr ""
+
+#: forms.py:60
+msgid "Between 5 and 7 years"
+msgstr ""
+
+#: forms.py:61
+msgid "Between 7 and 12 years"
+msgstr ""
+
+#: forms.py:62
+msgid "More than 12 years"
+msgstr ""
+
+#: forms.py:69
+msgid "Undergraduate Research"
+msgstr ""
+
+#: forms.py:70
+msgid "Undergraduate Courses"
+msgstr ""
+
+#: forms.py:71
+msgid "Graduate or Postgraduate Research"
+msgstr ""
+
+#: forms.py:72
+msgid "Research (University)"
+msgstr ""
+
+#: forms.py:73
+msgid "Research (Company)"
+msgstr ""
+
+#: forms.py:74 forms.py:98 forms.py:143 forms.py:166
+msgid "Other(s)"
+msgstr ""
+
+#: forms.py:75 forms.py:99 forms.py:116 forms.py:144 forms.py:167 forms.py:181
+#: forms.py:183 forms.py:185
+msgid "Specify"
+msgstr ""
+
+#: forms.py:81
+msgid ""
+"Workflow Management Systems (eg.: VisTrails, Taverna, Kepler, SciCumulus,"
+" etc)"
+msgstr ""
+
+#: forms.py:82
+msgid "Script Languages (eg.: Python, R, JavaScript, Julia, Matlab, etc)"
+msgstr ""
+
+#: forms.py:83
+msgid ""
+"System Programing languages (eg.: Java, C, C++, Fortran, Object Pascal, "
+"etc)"
+msgstr ""
+
+#: forms.py:89
+msgid "Askalon"
+msgstr ""
+
+#: forms.py:90
+msgid "e-Science Central"
+msgstr ""
+
+#: forms.py:91
+msgid "Galaxy"
+msgstr ""
+
+#: forms.py:92
+msgid "Kepler"
+msgstr ""
+
+#: forms.py:93
+msgid "Pegasus"
+msgstr ""
+
+#: forms.py:94
+msgid "SciCumulus"
+msgstr ""
+
+#: forms.py:95
+msgid "Swift/T"
+msgstr ""
+
+#: forms.py:96
+msgid "Taverna"
+msgstr ""
+
+#: forms.py:97
+msgid "VisTrails"
+msgstr ""
+
+#: forms.py:105
+msgid "IDL"
+msgstr ""
+
+#: forms.py:106
+msgid "Javascript"
+msgstr ""
+
+#: forms.py:107
+msgid "Julia"
+msgstr ""
+
+#: forms.py:108
+msgid "Matlab"
+msgstr ""
+
+#: forms.py:109
+msgid "Perl"
+msgstr ""
+
+#: forms.py:110
+msgid "Python"
+msgstr ""
+
+#: forms.py:111
+msgid "R"
+msgstr ""
+
+#: forms.py:112
+msgid "S"
+msgstr ""
+
+#: forms.py:113
+msgid "Shell script"
+msgstr ""
+
+#: forms.py:114
+msgid "Wolfram Language"
+msgstr ""
+
+#: forms.py:115 forms.py:184
+msgid "Other(s)2"
+msgstr ""
+
+#: forms.py:123 forms.py:179
+msgid "Workflow Management Systems"
+msgstr ""
+
+#: forms.py:124 forms.py:180
+msgid "Script Languages"
+msgstr ""
+
+#: forms.py:125 forms.py:182
+msgid "System Programming Languages"
+msgstr ""
+
+#: forms.py:126
+msgid "I do not have preferences"
+msgstr ""
+
+#: forms.py:133
+msgid "Easy to set up and run"
+msgstr ""
+
+#: forms.py:134
+msgid "Flexible development/modification"
+msgstr ""
+
+#: forms.py:135
+msgid "Provenance capture support"
+msgstr ""
+
+#: forms.py:136
+msgid "Provenance analysis support"
+msgstr ""
+
+#: forms.py:137
+msgid "Previous experience (know-how)"
+msgstr ""
+
+#: forms.py:138
+msgid "Helping/Supporting facilities"
+msgstr ""
+
+#: forms.py:139
+msgid "Easy to learn"
+msgstr ""
+
+#: forms.py:140
+msgid "Documentation facilities"
+msgstr ""
+
+#: forms.py:141
+msgid "Easy to share"
+msgstr ""
+
+#: forms.py:142
+msgid "Easy to reproduce"
+msgstr ""
+
+#: forms.py:151 forms.py:207
+msgid "Yes"
+msgstr ""
+
+#: forms.py:152 forms.py:208
+msgid "No"
+msgstr ""
+
+#: forms.py:153
+msgid "I do not know what is provenance"
+msgstr ""
+
+#: forms.py:160
+msgid "Deadline"
+msgstr ""
+
+#: forms.py:161
+msgid "I do not see any utility"
+msgstr ""
+
+#: forms.py:162
+msgid "I do not have the appropriate tools"
+msgstr ""
+
+#: forms.py:163
+msgid "I do not have enough knowledge"
+msgstr ""
+
+#: forms.py:164
+msgid "I did not collect the provenance"
+msgstr ""
+
+#: forms.py:165
+msgid "I did not reach the analysis phase"
+msgstr ""
+
+#: forms.py:173
+msgid "SQL"
+msgstr ""
+
+#: forms.py:174
+msgid "Prolog"
+msgstr ""
+
+#: forms.py:175
+msgid "Datalog"
+msgstr ""
+
+#: forms.py:176
+msgid "SPARQL"
+msgstr ""
+
+#: forms.py:177
+msgid "XQuery"
+msgstr ""
+
+#: forms.py:178
+msgid "XPath"
+msgstr ""
+
+#: forms.py:192
+msgid "Yes, I have used distinct Workflow Management Systems"
+msgstr ""
+
+#: forms.py:193
+msgid "Yes, I have used distinct Script Languages"
+msgstr ""
+
+#: forms.py:194
+msgid "Yes, I have used distinct System Programming Languages"
+msgstr ""
+
+#: forms.py:195
+msgid "Yes, I have used Workflow Management Systems and Script Languages"
+msgstr ""
+
+#: forms.py:196
+msgid ""
+"Yes, I have used Workflow Management Systems and System Programming "
+"Languages"
+msgstr ""
+
+#: forms.py:197
+msgid "Yes, I have used Script Languages and System Programming Languages"
+msgstr ""
+
+#: forms.py:198
+msgid "Yes, I have used all types of tools"
+msgstr ""
+
+#: forms.py:199
+msgid "No, I have never combined multiple tools"
+msgstr ""
+
+#: forms.py:216
+msgid "You must specify the email!"
+msgstr ""
+
+#: forms.py:217
+msgid "The email must be valid!"
+msgstr ""
+
+#: forms.py:219
+msgid "Finish"
+msgstr ""
+
+#: frontend.py:21
+msgid "Start2"
+msgstr ""
+
+#: helper.py:96
+msgid "Invalid Session. Restarting"
+msgstr ""
+
+#: helper.py:137
+msgid "~1 minute remaining"
+msgstr ""
+
+#: helper.py:139
+#, python-format
+msgid "~%(minutes)s minutes remaining"
+msgstr ""
+
+#: survey.py:53
+msgid "What is your educational level?"
+msgstr ""
+
+#: survey.py:60
+msgid ""
+"How many scientific experiments have you ever performed on computational "
+"environments?"
+msgstr ""
+
+#: survey.py:67
+msgid ""
+"How much experience do you have in running scientific experiments on "
+"computational environments?"
+msgstr ""
+
+#: survey.py:74
+msgid ""
+"In which situations have you performed computational experiments? (check "
+"all that apply)"
+msgstr ""
+
+#: survey.py:81
+msgid ""
+"Which computational tools have you ever used to run your experiments? "
+"(check all that apply)"
+msgstr ""
+
+#: survey.py:93
+msgid ""
+"Which Workflow Management Systems have you ever used to run scientific "
+"experiments (check all that apply)"
+msgstr ""
+
+#: survey.py:106
+msgid ""
+"Which Script Languages have you ever used to run scientific experiments "
+"(check all that apply)"
+msgstr ""
+
+#: survey.py:119
+msgid ""
+"Which is your favorite tool for developing and running scientific "
+"experiments?"
+msgstr ""
+
+#: survey.py:132
+msgid "What are the reasons for your preference? (check all that apply)"
+msgstr ""
+
+#: survey.py:145
+msgid ""
+"Have you ever analyzed provenance generated from the execution of "
+"scientific experiments?"
+msgstr ""
+
+#: survey.py:163
+msgid "Why did you not analyze provenance data? (check all that apply)"
+msgstr ""
+
+#: survey.py:173
+msgid ""
+"Which tools/languages have you ever used to analyze provenance? (check "
+"all that apply)"
+msgstr ""
+
+#: survey.py:183
+msgid "Have you ever used more than one tool in a single experiment?"
+msgstr ""
+
+#: survey.py:190
+msgid ""
+"In your understanding, when two team execute variations of a given "
+"experiment, is there any advantage in performing a joint analysis of "
+"these experiments, by comparing result data, methods, duration, and/or "
+"used parameters?"
+msgstr ""
+
+#: survey.py:197
+msgid ""
+"Have you ever analyzed (or had to analyze) two or more provenance "
+"databases generated by variations of a given experiment together? Note "
+"that different teams with different machines might have executed these "
+"experiments, or a single person might have executed the variations."
+msgstr ""
+
+#: survey.py:204
+msgid "These experiments were executed in different tools?"
+msgstr ""
+
+#: survey.py:214
+msgid ""
+"Would you accept being contacted about the possibility of participating "
+"in a practical experimental study about integrated provenance analysis? "
+"The study is in the context of a PhD thesis about provenance integration."
+msgstr ""
+
+#: survey.py:221
+msgid ""
+"Would you accept being contacted to clarify some details about the "
+"answers you provided in this survey?"
+msgstr ""
+
+#: survey.py:228
+msgid "Please, enter your email so we can contact you."
+msgstr ""
+
+#: survey.py:235 survey.py:241
+msgid "Thank you"
+msgstr ""
+
+#: templates/base.html:3 templates/index.html:7
+msgid "Computational Experiments Survey"
+msgstr ""
+
+#: templates/base.html:53 templates/index.html:11
+#, python-format
+msgid "Any questions or problems please report to %(wellmor)s or %(jpimentel)s."
+msgstr ""
+
+#: templates/finish.html:7
+msgid "Thank you for the answers!"
+msgstr ""
+
+#: templates/index.html:8
+msgid "Hello,"
+msgstr ""
+
+#: templates/index.html:9
+msgid ""
+"We are doing a survey to identify computational tools and technologies "
+"most used to design, execute, and analyze scientific experiments. For "
+"this, we would like to invite you to collaborate by answer a "
+"questionnaire with multiple choice options. Some questions require "
+"additional information. The estimated time for answering is around XX "
+"minutes. This survey was designed by PhD students of Computing Science "
+"from Universidade Federal Fluminense (UFF)."
+msgstr ""
+
