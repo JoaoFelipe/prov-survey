@@ -5,3 +5,5 @@ flask-debug
 flask-wtf
 flask-babel
 flask-sqlalchemy
+flask-script
+flask-migrate

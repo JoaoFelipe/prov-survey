@@ -6,6 +6,16 @@ from flask import session, render_template, redirect, url_for, flash
 from flask_babel import gettext
 from flask_nav.elements import View
 
+from .db import db, Answer
+
+def save_answer(number, data=None):
+    data = data if data is not None else session['s_{}_a'.format(number)]
+    uid = session['s_uid']
+    Answer.query.filter_by(uid=uid, question=number).delete()
+    for key, value in data.items():
+        if value:
+            db.session.add(Answer(uid, number, key, str(value)))
+    db.session.commit()
 
 def last(order):
     """Return last visited"""
@@ -20,11 +30,21 @@ def last(order):
     return ('index',)
 
 
-def erase(number):
+def erase(numbers):
     """Remove question from NavBar"""
-    sid = 's_{}'.format(number)
-    if sid in session:
-        del session[sid]
+    if isinstance(numbers, str):
+        numbers = [numbers]
+    uid = session['s_uid']
+    for number in numbers:
+        Answer.query.filter_by(uid=uid, question=number).delete()
+        sid = 's_{}'.format(number)
+        sid_ans = sid + '_a'
+        if sid in session:
+            del session[sid]
+        if sid_ans in session:
+            del session[sid_ans]
+
+    db.session.commit()
 
 
 def question(form, title):
@@ -64,6 +84,7 @@ def question_form(number, next_question, form_class, title, alternative=None):
         session[answer] = copy(form.data)
         del session[answer]['submit']
         del session[answer]['csrf_token']
+        save_answer(number)
         # ToDo: save
         return goto(next_question)
     return question(form, title)

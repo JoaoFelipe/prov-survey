@@ -8,9 +8,10 @@ import binascii
 from flask import session, render_template
 from flask_babel import gettext, lazy_gettext
 
+from .db import db, Answer
 
 from .helper import erase, goto, question_form, radio_question, last, answer
-from .helper import option, set_navbar, survey_question
+from .helper import option, set_navbar, survey_question, save_answer
 
 from .forms import StartForm, NextForm
 from .forms import Education, ExperimentCount, Experience, Situations
@@ -37,10 +38,13 @@ def index():
     form = (NextForm if 's_uid' in session else StartForm)()
     if form.validate_on_submit():
         if form.submit.data:
+            if 's_uid' in session:
+                save_answer('finish', {'submit': 'restart'})
             session.clear()
             session['s_lang'] = lang
             session['s_index'] = True
             session['s_uid'] = binascii.hexlify(os.urandom(24))
+            save_answer('index', {'submit': 'yes'})
             # ToDo: save
         session['s_p1'] = True
         return goto('p1')
@@ -81,7 +85,18 @@ def u1():
     title = gettext("Which computational tools have you ever used to run your experiments? (check all that apply)")
     def redir():
         """Select next acoording to choosen option"""
-        if sum(1 for x in answer('u1').values() if x) == 0:
+        ans = answer('u1')
+        quantity = sum(1 for x in ans.values() if x) 
+        erase_list = []
+        if not ans.get('wfms', False):
+            erase_list.append('u2')
+        if not ans.get('script', False):
+            erase_list.append('u3')
+        if quantity == 1:
+            erase_list.append('u4')
+        erase(erase_list)
+        if quantity == 0:
+            erase(['u2', 'u3', 'u4', 'u5'])
             return 'finish'
         return 'u2'
     return question_form('u1', redir, Tools, title)
@@ -130,10 +145,11 @@ def u4():
 def u5():
     """Q9/U5"""
     title = gettext("What are the reasons for your preference? (check all that apply)")
-    if sum(1 for x in answer('u1').values() if x) == 0:
+    quantity = sum(1 for x in answer('u1').values() if x)
+    if quantity == 0:
         erase('u5')
         return goto('u1')
-    if sum(1 for x in answer('u1').values() if x) > 1:
+    if quantity > 1:
         if answer('u4').get('options', {}) and option('u4', 'no') in {'no', 'None'}:
             erase('u5')
             return goto('a1')
@@ -236,6 +252,7 @@ def f3():
 @set_navbar(lazy_gettext("Thank you"))
 def finish():
     """Thank you page"""
+    save_answer('finish', {'submit': 'final'})
     lang = session['s_lang']
     session.clear()
     session['s_lang'] = lang

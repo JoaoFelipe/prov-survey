@@ -1,21 +1,20 @@
 """Navbar and routes"""
 
-from flask import Blueprint, session
-from flask import request
+from flask import Blueprint, session, request, current_app
 from flask_babel import lazy_gettext
 
 from . import survey
 from .babel import babel
-from .config import LANGUAGES, LANGUAGES_LOCALE
 from .helper import local_view, last, goto, answer
 from .nav import nav, ExtendedNavbar
 
-
+GET_POST = ('GET', 'POST')
 frontend = Blueprint('frontend', __name__)
 
 
 def frontend_top():
     """Calculate Navbar"""
+    languages = current_app.config['LANGUAGES']
     args = []
     if 's_index' in session:
         args.append(local_view(lazy_gettext('Start2'), 'index'))
@@ -30,12 +29,12 @@ def frontend_top():
                 elif len(ans) == sum(1 for x in ans.values() if not x):
                     view.classes = ["unanswered"]
             args.append(view)
-    languages = [local_view(v, lang=k) for k, v in LANGUAGES.items()
-                 if k != session['s_lang']]
+    language_items = [local_view(v, lang=k) for k, v in languages.items()
+                      if k != session['s_lang']]
 
     return ExtendedNavbar(
         title=local_view(session['s_minutes']),
-        items=args, right_items=languages
+        items=args, right_items=language_items
     )
 
 nav.register_element('frontend_top', frontend_top)
@@ -43,10 +42,11 @@ nav.register_element('frontend_top', frontend_top)
 @babel.localeselector
 def get_locale():
     """Select locale according to session['s_lang']"""
+    locale = current_app.config['LANGUAGES_LOCALE']
     # if a user is logged in, use the locale from the user settings
     if 's_lang' in session:
-        return LANGUAGES_LOCALE[session['s_lang']]
-    return request.accept_languages.best_match(LANGUAGES_LOCALE.values())
+        return locale[session['s_lang']]
+    return request.accept_languages.best_match(locale.values())
 
 
 @frontend.route('/')
@@ -55,12 +55,12 @@ def root():
     return goto('index')
 
 
-@frontend.route('/<lang>/', defaults={'number': 'index'},
-                methods=('GET', 'POST'))
-@frontend.route('/<lang>/<number>/', methods=('GET', 'POST'))
+@frontend.route('/<lang>/', defaults={'number': 'index'}, methods=GET_POST)
+@frontend.route('/<lang>/<number>/', methods=GET_POST)
 def question(lang, number):
     """Survey question routes"""
-    session['s_lang'] = lang if lang in LANGUAGES else 'en'
+    languages = current_app.config['LANGUAGES']
+    session['s_lang'] = lang if lang in languages else 'en'
     if hasattr(survey, number):
         return getattr(survey, number)()
     return goto(last(survey.ORDER))

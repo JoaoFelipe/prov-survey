@@ -102,7 +102,7 @@ msgstr "5 a 10"
 
 #: forms.py:49
 msgid "More than 10"
-msgstr "Mais de 1"
+msgstr "Mais de 10"
 
 #: forms.py:57
 msgid "Less than 1 year"
