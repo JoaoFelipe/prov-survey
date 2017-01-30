@@ -20,9 +20,9 @@ SQLALCHEMY_DATABASE_URI = env(
 )
 SQLALCHEMY_TRACK_MODIFICATIONS = False
 
-MAIL_SERVER = 'smtp.gmail.com'
-MAIL_PORT = 465 # 587?
-MAIL_USE_SSL = True
+MAIL_SERVER = env('EMAIL_SERVER', 'smtp.gmail.com')
+MAIL_PORT = env('EMAIL_PORT', 465) # 587?
+MAIL_USE_SSL = env('EMAIL_USE_SSL', True)
 MAIL_USERNAME = env('EMAIL_USERNAME')
 MAIL_PASSWORD = env('EMAIL_PASSWORD')
 
@@ -47,3 +47,5 @@ LANGUAGES_LOCALE = {
     'en': 'en',
     'ptbr': 'pt_BR',
 }
+
+DEBUG = env('SURVEY_DEBUG', False)
