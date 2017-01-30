@@ -22,6 +22,7 @@ from .nav import nav, init_custom_nav_renderer
 from .babel import babel
 from .db import db, migrate
 from .helper import question_url
+from .mail import mail
 
 
 def create_app(configfile=None):
@@ -59,5 +60,8 @@ def create_app(configfile=None):
     # Database
     db.init_app(app)
     migrate.init_app(app, db)
+
+    # Email
+    mail.init_app(app)
 
     return app

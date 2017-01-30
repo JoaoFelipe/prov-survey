@@ -8,14 +8,34 @@
 import os
 basedir = os.path.abspath(os.path.dirname(__file__))
 
+def env(value, other=None):
+    if value in os.environ:
+        return os.environ[value]
+    return other
 
-SECRET_KEY = 'secret?'
+SECRET_KEY = env('SURVEY_SECRET', 'secret?')
 
-SQLALCHEMY_DATABASE_URI = (
-	os.environ['DATABASE_URL'] if 'DATABASE_URL' in os.environ
-	else 'sqlite:///' + os.path.join(basedir, 'app.db')
+SQLALCHEMY_DATABASE_URI = env(
+    'DATABASE_URL', 'sqlite:///' + os.path.join(basedir, 'app.db')
 )
 SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+MAIL_SERVER = 'smtp.gmail.com'
+MAIL_PORT = 465 # 587?
+MAIL_USE_SSL = True
+MAIL_USERNAME = env('EMAIL_USERNAME')
+MAIL_PASSWORD = env('EMAIL_PASSWORD')
+
+gmail = 'gmail.com'
+newcastle = 'newcastle.ac.uk'
+CONTACTS = {
+    'joao': ('joaofelipenp', gmail),
+    'wellington': ('wmoliveira1', gmail),
+    'leo': ('leomurta', gmail),
+    'vanessa': ('vanessa.braganholo', gmail),
+    'daniel': ('danielcmo', gmail),
+    'paolo': ('paolo.missier', newcastle),
+}
 
 
 LANGUAGES = {

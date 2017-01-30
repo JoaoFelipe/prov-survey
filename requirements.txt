@@ -7,3 +7,4 @@ flask-babel
 flask-sqlalchemy
 flask-script
 flask-migrate
+flask-mail

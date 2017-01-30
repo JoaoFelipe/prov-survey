@@ -1,25 +1,104 @@
 # pylint: disable=line-too-long
 """Survey Forms"""
+from collections import OrderedDict
+
 from flask_babel import lazy_gettext
 
-from wtforms.fields import SubmitField, TextField, BooleanField, RadioField
+from wtforms.fields import SubmitField, TextField, BooleanField
+from wtforms.fields import RadioField
+from wtforms.fields.core import UnboundField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import Email, DataRequired
 from flask_wtf import FlaskForm
 
 
 
-class StartForm(FlaskForm):
+class Form(FlaskForm):
+    """Survey Form BaseClass"""
+
+    @classmethod
+    def survey_fields(cls):
+        """Return form fields"""
+        return [attr for attr, value in cls.__dict__.items()
+                if isinstance(value, UnboundField)
+                if value.field_class is not SubmitField]
+
+    @classmethod
+    def survey_field_answer(cls, field, answer, raw=False):  # pylint: disable=unused-argument
+        """Return field answer as str"""
+        if field not in answer:
+            return None
+        return str(answer[field])
+
+
+    @classmethod
+    def survey_answers(cls, answer, raw=False, sep=', '):
+        """Return field answers for a user"""
+        if answer is None:
+            return ''
+        result = []
+        for field in cls.survey_fields():
+            ans = cls.survey_field_answer(field, answer, raw=raw)
+            if ans is not None:
+                result.append(ans)
+        return sep.join(result)
+
+
+class RadioForm(Form):
+    """Survey RadioForm BaseClass"""
+    _mode = 'radio'
+
+    @classmethod
+    def survey_field_answer(cls, field, answer, raw=False):
+        unbound = getattr(cls, field)
+        if field not in answer or unbound.field_class is not RadioField:
+            return None
+        extra = ''
+        raw_name = str(answer[field])
+        if raw_name.endswith('_e') and raw_name[:-2] in answer:
+            extra = '({})'.format(answer[raw_name[:-2]])
+        if raw:
+            return raw_name + extra
+        name = str(dict(unbound.kwargs['choices'])[raw_name])
+        return name + extra
+
+
+
+class CheckForm(Form):
+    """Survey CheckForm BaseClass"""
+    _mode = 'check'
+
+    @classmethod
+    def survey_field_answer(cls, field, answer, raw=False):
+        unbound = getattr(cls, field)
+        is_not_boolean = unbound.field_class is not BooleanField
+        if answer.get(field, '') != 'True' or is_not_boolean:
+            return None
+        extra = ''
+        if field.endswith('_e') and field[:-2] in answer:
+            extra = '({})'.format(answer[field[:-2]])
+        if raw:
+            return field + extra
+        name = str(unbound.args[0])
+        return name + extra
+
+
+class TextForm(Form):
+    """Survey TextForm BaseClass"""
+    _mode = 'text'
+
+
+class StartForm(Form):
     """Index - Start"""
     submit = SubmitField(lazy_gettext('Start'))
 
 
-class NextForm(FlaskForm):
+class NextForm(Form):
     """Index - Restart"""
     submit = SubmitField(lazy_gettext('Restart'))
     next = SubmitField(lazy_gettext('Next'))
 
-class Education(FlaskForm):
+class Education(RadioForm):
     """Q1/P1"""
     options = RadioField('', choices=[
         ('no', lazy_gettext('No schooling completed')),
@@ -39,7 +118,7 @@ class Education(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class ExperimentCount(FlaskForm):
+class ExperimentCount(RadioForm):
     """Q2/P2"""
     options = RadioField('', choices=[
         ('0', lazy_gettext('0')),
@@ -51,7 +130,7 @@ class ExperimentCount(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Experience(FlaskForm):
+class Experience(RadioForm):
     """Q3/P3"""
     options = RadioField('', choices=[
         ('less_than_1', lazy_gettext('Less than 1 year')),
@@ -64,7 +143,7 @@ class Experience(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Situations(FlaskForm):
+class Situations(CheckForm):
     """Q4/P4"""
     undergraduate_research = BooleanField(lazy_gettext('Undergraduate Research'))
     undergraduate_courses = BooleanField(lazy_gettext('Undergraduate Courses'))
@@ -76,16 +155,16 @@ class Situations(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Tools(FlaskForm):
-    """Q5/U1"""
+class Tools(CheckForm):
+    """Q5/T"""
     wfms = BooleanField(lazy_gettext('Workflow Management Systems (eg.: VisTrails, Taverna, Kepler, SciCumulus, etc)'))
     script = BooleanField(lazy_gettext('Script Languages (eg.: Python, R, JavaScript, Julia, Matlab, etc)'))
     prog = BooleanField(lazy_gettext('System Programing languages (eg.: Java, C, C++, Fortran, Object Pascal, etc)'))
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Workflows(FlaskForm):
-    """Q6/U2"""
+class Workflows(CheckForm):
+    """Q6/W"""
     askalon = BooleanField(lazy_gettext('Askalon'))
     esci_central = BooleanField(lazy_gettext('e-Science Central'))
     galaxy = BooleanField(lazy_gettext('Galaxy'))
@@ -100,8 +179,8 @@ class Workflows(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class ScriptLanguages(FlaskForm):
-    """Q7/U3"""
+class ScriptLanguages(CheckForm):
+    """Q7/S"""
     idl = BooleanField(lazy_gettext('IDL'))
     javascript = BooleanField(lazy_gettext('Javascript'))
     julia = BooleanField(lazy_gettext('Julia'))
@@ -117,8 +196,8 @@ class ScriptLanguages(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Preference(FlaskForm):
-    """Q8/U4"""
+class Preference(RadioForm):
+    """Q8/C"""
     options = RadioField('', choices=[
         ('wfms', lazy_gettext('Workflow Management Systems')),
         ('script', lazy_gettext('Script Languages')),
@@ -128,8 +207,8 @@ class Preference(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class PreferenceReasons(FlaskForm):
-    """Q9/U5"""
+class PreferenceReasons(CheckForm):
+    """Q9/R"""
     setup = BooleanField(lazy_gettext('Easy to set up and run'))
     flexibility = BooleanField(lazy_gettext('Flexible development/modification'))
     provenance_capture = BooleanField(lazy_gettext('Provenance capture support'))
@@ -145,7 +224,7 @@ class PreferenceReasons(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Analysis(FlaskForm):
+class Analysis(RadioForm):
     """Q10/A1"""
     options = RadioField('', choices=[
         ('yes', lazy_gettext('Yes')),
@@ -155,7 +234,7 @@ class Analysis(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class NoAnalysis(FlaskForm):
+class NoAnalysis(CheckForm):
     """Q11/A2A"""
     deadline = BooleanField(lazy_gettext('Deadline'))
     no_utility = BooleanField(lazy_gettext('I do not see any utility'))
@@ -168,7 +247,7 @@ class NoAnalysis(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class AnalysisTools(FlaskForm):
+class AnalysisTools(CheckForm):
     """Q12/A2B"""
     SQL = BooleanField(lazy_gettext('SQL'))
     Prolog = BooleanField(lazy_gettext('Prolog'))
@@ -186,7 +265,7 @@ class AnalysisTools(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Integration(FlaskForm):
+class Integration(RadioForm):
     """Q13/I1"""
     options = RadioField('', choices=[
         ('distinct_wfms ', lazy_gettext('Yes, I have used distinct Workflow Management Systems')),
@@ -201,7 +280,7 @@ class Integration(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class YesNo(FlaskForm):
+class YesNo(RadioForm):
     """Q14/I2, Q15/I3, Q16/I4, Q17/F1, Q18/F2"""
     options = RadioField('', choices=[
         ('yes', lazy_gettext('Yes')),
@@ -210,7 +289,7 @@ class YesNo(FlaskForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class EmailForm(FlaskForm):
+class EmailForm(TextForm):
     """Q19/F3"""
     email = TextField('', [
         DataRequired(lazy_gettext('You must specify the email!')),

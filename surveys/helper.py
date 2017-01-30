@@ -1,12 +1,44 @@
 """Helpers functions to build a survey"""
+import csv
+
 from copy import copy
 from functools import wraps
+from itertools import groupby
 
 from flask import session, render_template, redirect, url_for, flash
 from flask_babel import gettext
 from flask_nav.elements import View
 
 from .db import db, Answer
+
+def create_csv(csvfile, forms, sep=';', internal_sep=',', raw=True):
+    """Create csv with results"""
+    writer = csv.writer(csvfile, delimiter=sep)
+    writer.writerow(
+        ['uid'] + list(forms.keys()) +
+        ['first', 'last', 'time', 'finished']
+    )
+
+    uids = list(db.session.query(Answer.uid).distinct())
+    for uid, in uids:
+        user_answers = list(
+            Answer.query.filter_by(uid=uid).order_by(Answer.created_at)
+        )
+        uanswers = {
+            num: {a.field: a.value for a in answers}
+            for num, answers in groupby(user_answers, lambda x: x.question)
+        }
+        row = [uid.decode('ascii')] + [
+            qform.survey_answers(uanswers.get(number, None),
+                                 raw=raw, sep=internal_sep)
+            for number, qform in forms.items()
+        ] + [
+            str(user_answers[0].created_at),
+            str(user_answers[-1].created_at),
+            str(user_answers[-1].created_at - user_answers[0].created_at),
+            'yes' if 'finish' in uanswers else 'no'
+        ]
+        writer.writerow(row)
 
 def save_answer(number, data=None):
     data = data if data is not None else session['s_{}_a'.format(number)]
@@ -56,7 +88,7 @@ def question_url(number=None, lang=None):
     """Url for question"""
     number = number or (session['s_url'] if 's_url' in session else 'index')
     lang = lang or (session['s_lang'] if 's_lang' in session else 'en')
-    return url_for(".question", lang=lang, number=number)
+    return url_for('.question', lang=lang, number=number)
 
 
 def goto(number):
@@ -114,7 +146,7 @@ def survey_started(func):
     def wrapper(*args, **kwargs):
         """Check if survey has started"""
         if 's_uid' not in session:
-            flash(gettext("Invalid Session. Restarting"))
+            flash(gettext('Invalid Session. Restarting'))
             return goto('index')
         return func(*args, **kwargs)
     return wrapper
@@ -155,10 +187,10 @@ def set_navbar(minutes):
             session['s_url'] = func.__name__
             session['s_' + func.__name__] = True
             if minutes == 1:
-                session['s_minutes'] = gettext("~1 minute remaining")
+                session['s_minutes'] = gettext('~1 minute remaining')
             elif isinstance(minutes, int):
                 session['s_minutes'] = gettext(
-                    "~%(minutes)s minutes remaining", minutes=minutes)
+                    '~%(minutes)s minutes remaining', minutes=minutes)
             else:
                 session['s_minutes'] = minutes
             return func(*args, **kwargs)
