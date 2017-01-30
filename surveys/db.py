@@ -13,13 +13,15 @@ class Answer(db.Model):
     id = Column(Integer, primary_key=True)
     uid = Column(String(80))
     question = Column(String(10))
+    lang = Column(String(10))
     field = Column(String(80))
     value = Column(String(120))
     created_at = Column(DateTime, default=datetime.datetime.utcnow)
 
-    def __init__(self, uid, question, field, value):
+    def __init__(self, uid, question, lang, field, value):
         self.uid = uid
         self.question = question
+        self.lang = lang
         self.field = field
         self.value = value
 

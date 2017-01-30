@@ -26,6 +26,12 @@ $ python manage.py db migrate
 $ python manage.py db upgrade
 ```
 
+Compile translations
+```bash
+$ cd surveys
+$ pybabel compile -d translations
+```
+
 Start the server:
 ```bash
 $ flask --app=surveys

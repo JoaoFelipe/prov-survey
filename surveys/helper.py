@@ -1,6 +1,7 @@
 """Helpers functions to build a survey"""
 import csv
 
+from collections import Counter
 from copy import copy
 from functools import wraps
 from itertools import groupby
@@ -16,7 +17,7 @@ def create_csv(csvfile, forms, sep=';', internal_sep=',', raw=True):
     writer = csv.writer(csvfile, delimiter=sep)
     writer.writerow(
         ['uid'] + list(forms.keys()) +
-        ['first', 'last', 'time', 'finished']
+        ['first', 'last', 'time', 'finished', 'language']
     )
 
     uids = list(db.session.query(Answer.uid).distinct())
@@ -36,17 +37,22 @@ def create_csv(csvfile, forms, sep=';', internal_sep=',', raw=True):
             str(user_answers[0].created_at),
             str(user_answers[-1].created_at),
             str(user_answers[-1].created_at - user_answers[0].created_at),
-            'yes' if 'finish' in uanswers else 'no'
+            'yes' if 'finish' in uanswers else 'no',
+            Counter(
+                next(answers).lang
+                for _, answers in groupby(user_answers, lambda x: x.question)
+            ).most_common()[0][0]
         ]
         writer.writerow(row)
 
 def save_answer(number, data=None):
     data = data if data is not None else session['s_{}_a'.format(number)]
     uid = session['s_uid']
+    lang = session['s_lang']
     Answer.query.filter_by(uid=uid, question=number).delete()
     for key, value in data.items():
         if value:
-            db.session.add(Answer(uid, number, key, str(value)))
+            db.session.add(Answer(uid, number, lang, key, str(value)))
     db.session.commit()
 
 def last(order):
