@@ -29,7 +29,8 @@ def create_csv(csvfile, forms, sep=';', internal_sep=',', raw=True):
             num: {a.field: a.value for a in answers}
             for num, answers in groupby(user_answers, lambda x: x.question)
         }
-        row = [uid.decode('ascii')] + [
+        uid = uid if isinstance(uid, str) else uid.decode('ascii')
+        row = [uid] + [
             qform.survey_answers(uanswers.get(number, None),
                                  raw=raw, sep=internal_sep)
             for number, qform in forms.items()
