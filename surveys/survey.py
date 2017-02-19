@@ -9,50 +9,54 @@ from collections import OrderedDict
 from flask import session, render_template
 from flask_babel import gettext, lazy_gettext
 
+from itertools import chain
+
 from .db import db, Answer
 
 from .helper import erase, goto, question_form, radio_question, last, answer
 from .helper import option, set_navbar, survey_question, save_answer
 
 from .forms import StartForm, NextForm
-from .forms import Education, ExperimentCount, Experience, Situations
-from .forms import Tools, Workflows, ScriptLanguages
-from .forms import Preference, PreferenceReasons
-from .forms import Analysis, NoAnalysis, AnalysisTools, Integration
+from .forms import Education, ExperimentCount, Domains, Experience, Situations
+from .forms import Tools, Preference, PreferenceReasons
+from .forms import Integration, Likelyhood
+from .forms import Analysis, AnalysisReasons, AnalysisTools
 from .forms import EmailForm, YesNo
 
 FORMS = OrderedDict([
     ('p1', Education),
     ('p2', ExperimentCount),
-    ('p3', Experience),
-    ('p4', Situations),
-    ('t', Tools),
-    ('w', Workflows),
-    ('s', ScriptLanguages),
-    ('c', Preference),
-    ('r', PreferenceReasons),
-    ('a1', Analysis),
-    ('a2a', NoAnalysis),
-    ('a2b', AnalysisTools),
+    ('p3', Domains),
+    ('p4', Experience),
+    ('p5', Situations),
+    ('t1', Tools),
+    ('t2', Preference),
+    ('t3', PreferenceReasons),
     ('i1', Integration),
-    ('i2', YesNo),
-    ('i3', YesNo),
-    ('i4', YesNo),
-    ('f1', YesNo),
-    ('f2', YesNo),
-    ('f3', EmailForm),
+    ('i2', Likelyhood),
+    ('a1', Analysis),
+    ('a2', AnalysisReasons),
+    ('a3', AnalysisTools),
+    ('a4', YesNo),
+    ('a5', YesNo),
+    ('c1', YesNo),
+    ('c2', YesNo),
+    ('c3', EmailForm),
 ])
 
 ORDER = [x.upper() for x in FORMS.keys()] + ['finish']
 
 
-def form(number, next_question, title):
+def form(number, next_question, title, options=None):
     """Question Form based on Form type"""
     form_class = FORMS[number]
     question_function = (
         question_form if form_class._mode != 'radio' else radio_question
     )
-    return question_function(number, next_question, form_class, title)
+    return question_function(
+        number, next_question, form_class, title,
+        options=options
+    )
 
 
 @set_navbar(9)
@@ -89,188 +93,164 @@ def p2():
     return form('p2', (lambda: 'p3' if option('p2') != '0' else 'finish'), title)
 
 
-@survey_question('p2', 8)
+@survey_question('p2', 7)
 def p3():
     """Q3/P3"""
-    title = gettext('How much experience do you have in running scientific experiments on computational environments?')
+    title = gettext('What are your scientific domains? (check all that apply)')
     return form('p3', 'p4', title)
 
 
 @survey_question('p3', 7)
 def p4():
     """Q4/P4"""
-    title = gettext('In which situations have you performed computational experiments? (check all that apply)')
-    return form('p4', 't', title)
+    title = gettext('How much experience do you have in running scientific experiments on computational environments?')
+    return form('p4', 'p5', title)
 
 
-@survey_question('p4', 7)
-def t():
-    """Q5/T"""
-    title = gettext('Which computational tools have you ever used to run your experiments? (check all that apply)')
+@survey_question('p4', 6)
+def p5():
+    """Q5/P5"""
+    title = gettext('In which roles have you performed computational experiments? (check all that apply)')
+    return form('p5', 't1', title)
+
+
+def t1_answers():
+    ans = answer('t1')
+    items = [
+        (k, getattr(Tools, k).args[0]) for k, v in ans.items()
+        if 'other' not in k
+        if v
+    ]
+    if "other_e" in ans and ans["other_e"]:
+        items.append(
+            ('other_e', ans['other']) if 'other' in ans else
+            ('other_e', getattr(Tools, 'other_e').args[0])
+        )
+    return items
+
+
+@survey_question('p5', 6)
+def t1():
+    """Q6/T1"""
+    title = gettext('What are your preferred/more often used tools you use to run experiments? (check up to 3 tools)')
     def redir():
-        """Select next acoording to choosen option"""
-        ans = answer('t')
-        quantity = sum(1 for x in ans.values() if x)
-        erase_list = []
-        if not ans.get('wfms', False):
-            erase_list.append('w')
-        if not ans.get('script', False):
-            erase_list.append('s')
-        if quantity == 1:
-            erase_list.append('c')
-        erase(erase_list)
-        if quantity == 0:
-            erase(['w', 's', 'c', 'r'])
-            return 'finish'
-        return 'w'
-    return form('t', redir, title)
+        t1_ans = t1_answers()
+        if len(t1_ans) <= 1:
+            erase(['t2', 't3'])
+            return 'i1'
+        if option('t2', '') not in {k for k, v in chain(t1_ans, [("no", 0)])}:
+            erase(['t2', 't3'])
+        return 't2'
+
+    return form('t1', redir, title)
 
 
-@survey_question('t', 6)
-def w():
-    """Q6/W"""
-    title = gettext('Which Workflow Management Systems have you ever used to run scientific experiments (check all that apply)')
-    if sum(1 for x in answer('t').values() if x) == 0:
-        erase('w')
-        return goto('t')
-    if not answer('t').get('wfms', False):
-        erase('w')
-        return goto('s')
-    return form('w', 's', title)
-
-
-@survey_question([('t', 'w')], 6)
-def s():
-    """Q7/S"""
-    title = gettext('Which Script Languages have you ever used to run scientific experiments (check all that apply)')
-    if sum(1 for x in answer('t').values() if x) == 0:
-        erase('s')
-        return goto('t')
-    if not answer('t').get('script', False):
-        erase('s')
-        return goto('c')
-    return form('s', 'c', title)
-
-
-@survey_question([('t', 'w', 's')], 5)
-def c():
-    """Q8/C"""
+@survey_question('t1', 5)
+def t2():
+    """Q7/T2"""
     title = gettext('Which is your favorite tool for developing and running scientific experiments?')
-    if sum(1 for x in answer('t').values() if x) == 0:
-        erase('c')
-        return goto('t')
-    if sum(1 for x in answer('t').values() if x) < 2:
-        erase('c')
-        return goto('r')
-    return form('c', 'r', title)
+    t1_ans = t1_answers()
+    if len(t1_ans) <= 1:
+        erase(['t2', 't3'])
+        return goto('i1')
+
+    options = t1_ans + Preference.options.kwargs['choices'][-1:]
+    return form('t2', 't3', title, options=options)
 
 
-@survey_question([('t', 'w', 's', 'c')], 5)
-def r():
-    """Q9/R"""
+@survey_question('t2', 5)
+def t3():
+    """Q8/T3"""
     title = gettext('What are the reasons for your preference? (check all that apply)')
-    quantity = sum(1 for x in answer('t').values() if x)
-    if quantity == 0:
-        erase('r')
-        return goto('t')
-    if quantity > 1:
-        if answer('c').get('options', {}) and option('c', 'no') in {'no', 'None'}:
-            erase('r')
-            return goto('a1')
-    return form('r', 'a1', title)
+    if answer('t2').get('options', {}) and option('t2', 'no') in {'no', 'None'}:
+        erase('t3')
+        return goto('i1')
+    return form('t3', 'i1', title)
 
 
-@survey_question([('w', 's', 'c', 'r')], 4)
-def a1():
-    """Q10/A1"""
-    title = gettext('Have you ever analyzed provenance generated from the execution of scientific experiments?')
-    def redir():
-        """Select next acoording to choosen option"""
-        opt = option('a1', 'yes')
-        if opt in {'yes', 'None'}:
-            erase('a2a')
-            return 'a2b'
-        if opt == 'no':
-            erase('a2b')
-            return 'a2a'
-        if opt == 'what_is_provenance':
-            return 'finish'
-    return form('a1', redir, title)
-
-
-@survey_question('a1', 4)
-def a2a():
-    """Q11/A2A"""
-    title = gettext('Why did you not analyze provenance data? (check all that apply)')
-    if option('a1', 'yes') in {'yes', 'None'}:
-        erase('a2a')
-        return goto(last(ORDER))
-    return form('a2a', 'i1', title)
-
-
-@survey_question('a1', 4)
-def a2b():
-    """Q12/A2B"""
-    title = gettext('Which tools/languages have you ever used to analyze provenance? (check all that apply)')
-    if option('a1', 'yes') == 'no':
-        erase('a2b')
-        return goto(last(ORDER))
-    return form('a2b', 'i1', title)
-
-
-@survey_question([('a2a', 'a2b')], 3)
+@survey_question('t1', 4)
 def i1():
-    """Q13/I1"""
+    """Q9/I1"""
     title = gettext('Have you ever used more than one tool in a single experiment?')
     return form('i1', 'i2', title)
 
 
-@survey_question('i1', 2)
+@survey_question('i1', 4)
 def i2():
-    """Q14/I2"""
-    title = gettext('In your understanding, when two team execute variations of a given experiment, is there any advantage in performing a joint analysis of these experiments, by comparing result data, methods, duration, and/or used parameters?')
-    return form('i2', 'i3', title)
+    """Q10/I2"""
+    title = gettext('Consider a collaborative science scenario where two teams execute variations of a given experiment and perform a joint analysis of these experiments, by comparing result data, methods, duration, and/or used parameters. In your experience, how likely is this scenario going to manifest itself in practice?')
+    return form('i2', 'a1', title)
 
 
-@survey_question('i2', 2)
-def i3():
-    """Q15/I3"""
-    title = gettext('Have you ever analyzed (or had to analyze) two or more provenance databases generated by variations of a given experiment together? Note that different teams with different machines might have executed these experiments, or a single person might have executed the variations.')
-    return form('i3', 'i4', title)
+@survey_question('i2', 3)
+def a1():
+    """Q11/A1"""
+    title = gettext('Have you ever analyzed provenance from your experiments?')
+    return form('a1', 'a2', title)
 
 
-@survey_question('i3', 2)
-def i4():
-    """Q16/I4"""
+@survey_question('a1', 3)
+def a2():
+    """Q12/A2"""
+    title = gettext('What value if any do you seek from provenance analysis? (check all that apply)')
+    if option('a1', '') in {'what_is_provenance',}:
+        erase(['a2', 'a3', 'a4', 'a5'])
+        return goto('c1')
+    return form('a2', 'a3', title)
+
+
+@survey_question('a2', 2)
+def a3():
+    """Q13/A3"""
+    title = gettext('Which tools/languages have you ever used to analyze provenance? (check all that apply)')
+    if option('a1', '') in {'what_is_provenance',}:
+        erase(['a2', 'a3', 'a4', 'a5'])
+        return goto(last(ORDER))
+    if option('a1', '') in {'no', 'None'}:
+        erase(['a3', 'a4', 'a5'])
+        return goto('c1')
+    return form('a3', 'a4', title)
+
+
+@survey_question('a3', 2)
+def a4():
+    """Q14/A4"""
+    title = gettext('Have you ever analyzed (or had to analyze) two or more provenance databases generated by variations of a given experiment together? This includes both the case of different teams running the experiments independently, as well as a single experimenter working on variants of an experiment.')
+    return form('a4', 'a5', title)
+
+
+@survey_question('a4', 2)
+def a5():
+    """Q15/A5"""
     title = gettext('These experiments were executed in different tools?')
-    if option('i3') == 'no':
-        erase('i4')
-        return goto('f1')
-    return form('i4', 'f1', title)
+    if option('a4') == 'no':
+        erase('a5')
+        return goto('c1')
+    return form('a5', 'c1', title)
 
 
-@survey_question([('i3', 'i4')], 1)
-def f1():
-    """Q17/F1"""
+@survey_question('a1', 1)
+def c1():
+    """Q16/C1"""
     title = gettext('Would you accept being contacted about the possibility of participating in a practical experimental study about integrated provenance analysis? The study is in the context of a PhD thesis about provenance integration.')
-    return form('f1', 'f2', title)
+    return form('c1', 'c2', title)
 
 
-@survey_question('f1', 1)
-def f2():
-    """Q18/F2"""
+@survey_question('c1', 1)
+def c2():
+    """Q17/C2"""
     title = gettext('Would you accept being contacted to clarify some details about the answers you provided in this survey?')
-    return form('f2', 'f3', title)
+    return form('c2', 'c3', title)
 
 
-@survey_question('f2', 1)
-def f3():
-    """Q19/F3"""
+@survey_question('c2', 1)
+def c3():
+    """Q18/C3"""
     title = gettext('Please, enter your email so we can contact you.')
-    if all(option(x) != 'yes' for x in ['f1', 'f2']):
-        erase('f3')
+    if all(option(x) != 'yes' for x in ['c1', 'c2']):
+        erase('c3')
         return goto('finish')
-    return form('f3', 'finish', title)
+    return form('c3', 'finish', title)
 
 
 @set_navbar(lazy_gettext('Thank you'))

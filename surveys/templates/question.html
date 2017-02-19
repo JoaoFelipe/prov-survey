@@ -5,12 +5,58 @@
 
 {% block jumbotron %}
   <h3>{{ title }}</h3>
-  {{wtf.quick_form(form)}}
+  {% if form|attr("limit") %}
+    <div class="limit"> {{ form.limit }} </div>
+  {% endif %}
+  {% if form|attr("_categories") %}
+    {%- set _enctype = [] %}
+    {%- for field in form %}
+      {%- if field.type == 'FileField' %}
+        {#- for loops come with a fairly watertight scope, so this list-hack is
+        used to be able to set values outside of it #}
+        {%- set _ = _enctype.append('multipart/form-data') -%}
+      {%- endif %}
+    {%- endfor %}
+    <form action="" method="post" class="form" role="form"
+      {%- if _enctype[0] %} enctype="{{_enctype[0]}}"{% endif -%}
+      {%- if novalidate %} novalidate{% endif -%}
+      >
+      {{ form.hidden_tag() }}
+      {{ wtf.form_errors(form, hiddens='only') }}
+      {% set size = (12 / (form._categories|length - 1)) | int %}
+      <div class="row">
+        {%- for category, items in form._categories.items() -%}
+          {% if category != "__other__" %}
+            <div class="col-sm-{{size}}">
+            <h4>{{ category }}</h4>
+          {% else %}
+            </div>
+            <div class="row">
+              <div class="col-sm-12">
+          {% endif %}
+          {%- for field_name in items -%}
+            {% set field = form|attr(field_name) %}
+            {% if not bootstrap_is_hidden_field(field) -%}
+              {{ wtf.form_field(field,
+                            form_type=form_type,
+                            horizontal_columns=horizontal_columns,
+                            button_map={}) }}
+            {%- endif %}
+          {%- endfor -%}
+
+          </div>
+        {%- endfor -%}
+      </div>
+    </form>
+  {% else %}
+    {{wtf.quick_form(form)}}
+  {% endif %}
 
   {{super()}}
 {%- endblock %}
 
 {% block scripts %}
+{{super()}}
 <script>
 
 function toggle_checkbox(element) {
@@ -29,6 +75,19 @@ for (var i = 0; i < elements.length; i++) {
   toggle_checkbox(element);
   element.addEventListener('change', function(){toggle_checkbox(this)}, false);
 }
+
+if (parseInt($('.limit').text().trim()) != NaN) {
+  $("input[type=checkbox]").change(function(){
+      var max = parseInt($('.limit').text().trim());
+      if( $("input[type=checkbox]:checked").length == max ){
+          $("input[type=checkbox]").attr('disabled', 'disabled');
+
+          $("input[type=checkbox]:checked").removeAttr('disabled');
+      }else{
+           $("input[type=checkbox]").removeAttr('disabled');
+      }
+  });
+}
 </script>
-{{super()}}
+
 {% endblock %}

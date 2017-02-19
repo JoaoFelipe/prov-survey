@@ -44,3 +44,7 @@ footer {
 .unanswered > a {
   color: red !important;
 }
+
+.limit {
+  display: none;
+}

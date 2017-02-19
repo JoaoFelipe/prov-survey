@@ -65,7 +65,6 @@ def root():
 @frontend.route('/send/<lang>/<receiver>/')
 def send(lang, receiver):
     """send results"""
-    #from IPython import embed; embed()
     raw = False
     languages = current_app.config['LANGUAGES']
     if lang == 'raw' or lang not in languages:
@@ -101,4 +100,3 @@ def question(lang, number):
     if hasattr(survey, number):
         return getattr(survey, number)()
     return goto(last(survey.ORDER))
-

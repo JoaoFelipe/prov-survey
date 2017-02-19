@@ -1,7 +1,7 @@
 """Helpers functions to build a survey"""
 import csv
 
-from collections import Counter
+from collections import Counter, OrderedDict
 from copy import copy
 from functools import wraps
 from itertools import groupby
@@ -114,11 +114,17 @@ def local_view(text, number=None, lang=None):
     return View(text, '.question', lang=lang, number=number)
 
 
-def question_form(number, next_question, form_class, title, alternative=None):
+def question_form(number, next_question, form_class, title, alternative=None, options=None):
     """Process GET and POST of a question form"""
     alternative = alternative or (lambda form: False)
     answer = 's_{}_a'.format(number)
     form = form_class(**session.get(answer, {}))
+    if hasattr(form, '_categories'):
+        form._categories = OrderedDict([
+            (str(k), v) for k, v in form._categories().items()
+        ])
+    if options is not None:
+        form.options.choices = options
     if alternative(form) or form.validate_on_submit():
         session[answer] = copy(form.data)
         del session[answer]['submit']
@@ -129,11 +135,12 @@ def question_form(number, next_question, form_class, title, alternative=None):
     return question(form, title)
 
 
-def radio_question(number, next_question, form_class, title):
+def radio_question(number, next_question, form_class, title, options=None):
     """Process GET and POST of a radio question form. Support empty question"""
     return question_form(
         number, next_question, form_class, title,
-        lambda form: (form.submit.data and form.options.data == 'None')
+        lambda form: (form.submit.data and form.options.data == 'None'),
+        options=options
     )
 
 

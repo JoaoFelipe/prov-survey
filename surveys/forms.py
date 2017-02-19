@@ -2,7 +2,7 @@
 """Survey Forms"""
 from collections import OrderedDict
 
-from flask_babel import lazy_gettext
+from flask_babel import lazy_gettext, gettext
 
 from wtforms.fields import SubmitField, TextField, BooleanField
 from wtforms.fields import RadioField
@@ -51,7 +51,7 @@ class RadioForm(Form):
     @classmethod
     def survey_field_answer(cls, field, answer, raw=False):
         unbound = getattr(cls, field)
-        if field not in answer or unbound.field_class is not RadioField:
+        if answer.get(field, '') in ('', 'None') or unbound.field_class is not RadioField:
             return None
         extra = ''
         raw_name = str(answer[field])
@@ -59,8 +59,15 @@ class RadioForm(Form):
             extra = '({})'.format(answer[raw_name[:-2]])
         if raw:
             return raw_name + extra
-        name = str(dict(unbound.kwargs['choices'])[raw_name])
-        return name + extra
+        try:
+            name = str(dict(unbound.kwargs['choices'])[raw_name])
+            return name + extra
+        except KeyError:
+            if not hasattr(cls, '_dynamic_checkform'):
+                raise
+            return cls._dynamic_checkform.survey_field_answer(
+                raw_name, {raw_name: 'True'}, raw=raw
+            )
 
 
 
@@ -130,8 +137,22 @@ class ExperimentCount(RadioForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Experience(RadioForm):
+class Domains(CheckForm):
     """Q3/P3"""
+    biology = BooleanField(lazy_gettext('Biological Sciences'))
+    computer = BooleanField(lazy_gettext('Computer and Information Sciences'))
+    education = BooleanField(lazy_gettext('Education'))
+    engineering = BooleanField(lazy_gettext('Engineering'))
+    geosciences = BooleanField(lazy_gettext('Geosciences'))
+    math = BooleanField(lazy_gettext('Mathematical Sciences'))
+    social = BooleanField(lazy_gettext('Social, Behavioral and Economic Sciences'))
+    other_e = BooleanField(lazy_gettext('Other(s)'))
+    other = TextField(lazy_gettext('Specify'))
+    submit = SubmitField(lazy_gettext('Next'))
+
+
+class Experience(RadioForm):
+    """Q4/P4"""
     options = RadioField('', choices=[
         ('less_than_1', lazy_gettext('Less than 1 year')),
         ('1_to_2', lazy_gettext('Between 1 and 2 years')),
@@ -144,27 +165,40 @@ class Experience(RadioForm):
 
 
 class Situations(CheckForm):
-    """Q4/P4"""
-    undergraduate_research = BooleanField(lazy_gettext('Undergraduate Research'))
-    undergraduate_courses = BooleanField(lazy_gettext('Undergraduate Courses'))
-    graduate_postgraduate_research = BooleanField(lazy_gettext('Graduate or Postgraduate Research'))
-    university_research = BooleanField(lazy_gettext('Research (University)'))
-    company_research = BooleanField(lazy_gettext('Research (Company)'))
+    """Q5/P5"""
+    undergraduate_research = BooleanField(lazy_gettext('Undergraduate Student in a Undergraduate Research'))
+    undergraduate_courses = BooleanField(lazy_gettext('Undergraduate Student in a Course'))
+    masters = BooleanField(lazy_gettext('Masters Student'))
+    phd = BooleanField(lazy_gettext('Ph.D. Student/Candidate'))
+    postdoc = BooleanField(lazy_gettext('Postdoctoral Researcher'))
+    university = BooleanField(lazy_gettext('University Researcher'))
+    company = BooleanField(lazy_gettext('Company Researcher'))
+    principal = BooleanField(lazy_gettext('Principal Investigator'))
     other_e = BooleanField(lazy_gettext('Other(s)'))
     other = TextField(lazy_gettext('Specify'))
     submit = SubmitField(lazy_gettext('Next'))
 
 
 class Tools(CheckForm):
-    """Q5/T"""
-    wfms = BooleanField(lazy_gettext('Workflow Management Systems (eg.: VisTrails, Taverna, Kepler, SciCumulus, etc)'))
-    script = BooleanField(lazy_gettext('Script Languages (eg.: Python, R, JavaScript, Julia, Matlab, etc)'))
-    prog = BooleanField(lazy_gettext('System Programing languages (eg.: Java, C, C++, Fortran, Object Pascal, etc)'))
-    submit = SubmitField(lazy_gettext('Next'))
+    """Q6/T1"""
+    limit = 3
+    _categories = lambda c: OrderedDict([
+        (lazy_gettext("Workflow Management Systems"), [
+            "askalon", "esci_central", "galaxy", "kepler", "pegasus",
+            "scicumulus", "swift", "taverna", "vistrails",
+        ]),
+        (lazy_gettext("Script Languages"), [
+            "idl", "javascript", "julia", "matlab", "perl", "python",
+            "r_lang", "s_lang", "shell", "wolfram"
+        ]),
+        (lazy_gettext("System Programming Languages"), [
+            "c", "cpp", "fortran", "java", "object_pascal",
+        ]),
+        ("__other__", [
+            "other_e", "other", "submit"
+        ])
+    ])
 
-
-class Workflows(CheckForm):
-    """Q6/W"""
     askalon = BooleanField(lazy_gettext('Askalon'))
     esci_central = BooleanField(lazy_gettext('e-Science Central'))
     galaxy = BooleanField(lazy_gettext('Galaxy'))
@@ -173,14 +207,8 @@ class Workflows(CheckForm):
     scicumulus = BooleanField(lazy_gettext('SciCumulus'))
     swift = BooleanField(lazy_gettext('Swift/T'))
     taverna = BooleanField(lazy_gettext('Taverna'))
-    VisTrails = BooleanField(lazy_gettext('VisTrails'))
-    other_e = BooleanField(lazy_gettext('Other(s)'))
-    other = TextField(lazy_gettext('Specify'))
-    submit = SubmitField(lazy_gettext('Next'))
+    vistrails = BooleanField(lazy_gettext('VisTrails'))
 
-
-class ScriptLanguages(CheckForm):
-    """Q7/S"""
     idl = BooleanField(lazy_gettext('IDL'))
     javascript = BooleanField(lazy_gettext('Javascript'))
     julia = BooleanField(lazy_gettext('Julia'))
@@ -191,24 +219,30 @@ class ScriptLanguages(CheckForm):
     s_lang = BooleanField(lazy_gettext('S'))
     shell = BooleanField(lazy_gettext('Shell script'))
     wolfram = BooleanField(lazy_gettext('Wolfram Language'))
+
+    c = BooleanField(lazy_gettext('C'))
+    cpp = BooleanField(lazy_gettext('C++'))
+    fortran = BooleanField(lazy_gettext('Fortran'))
+    java = BooleanField(lazy_gettext('Java'))
+    object_pascal = BooleanField(lazy_gettext('Object Pascal'))
+
     other_e = BooleanField(lazy_gettext('Other(s)2'))
     other = TextField(lazy_gettext('Specify'))
     submit = SubmitField(lazy_gettext('Next'))
 
 
+
 class Preference(RadioForm):
-    """Q8/C"""
+    """Q7/T2"""
+    _dynamic_checkform = Tools
     options = RadioField('', choices=[
-        ('wfms', lazy_gettext('Workflow Management Systems')),
-        ('script', lazy_gettext('Script Languages')),
-        ('prog', lazy_gettext('System Programming Languages')),
         ('no', lazy_gettext('I do not have preferences')),
     ])
     submit = SubmitField(lazy_gettext('Next'))
 
 
 class PreferenceReasons(CheckForm):
-    """Q9/R"""
+    """Q8/T3"""
     setup = BooleanField(lazy_gettext('Easy to set up and run'))
     flexibility = BooleanField(lazy_gettext('Flexible development/modification'))
     provenance_capture = BooleanField(lazy_gettext('Provenance capture support'))
@@ -224,49 +258,8 @@ class PreferenceReasons(CheckForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class Analysis(RadioForm):
-    """Q10/A1"""
-    options = RadioField('', choices=[
-        ('yes', lazy_gettext('Yes')),
-        ('no', lazy_gettext('No')),
-        ('what_is_provenance', lazy_gettext('I do not know what is provenance'))
-    ])
-    submit = SubmitField(lazy_gettext('Next'))
-
-
-class NoAnalysis(CheckForm):
-    """Q11/A2A"""
-    deadline = BooleanField(lazy_gettext('Deadline'))
-    no_utility = BooleanField(lazy_gettext('I do not see any utility'))
-    no_tools = BooleanField(lazy_gettext('I do not have the appropriate tools'))
-    no_knowledge = BooleanField(lazy_gettext('I do not have enough knowledge'))
-    no_collection = BooleanField(lazy_gettext('I did not collect the provenance'))
-    no_analysis = BooleanField(lazy_gettext('I did not reach the analysis phase'))
-    other_e = BooleanField(lazy_gettext('Other(s)'))
-    other = TextField(lazy_gettext('Specify'))
-    submit = SubmitField(lazy_gettext('Next'))
-
-
-class AnalysisTools(CheckForm):
-    """Q12/A2B"""
-    SQL = BooleanField(lazy_gettext('SQL'))
-    Prolog = BooleanField(lazy_gettext('Prolog'))
-    Datalog = BooleanField(lazy_gettext('Datalog'))
-    SPARQL = BooleanField(lazy_gettext('SPARQL'))
-    XQuery = BooleanField(lazy_gettext('XQuery'))
-    XPath = BooleanField(lazy_gettext('XPath'))
-    wfms = BooleanField(lazy_gettext('Workflow Management Systems'))
-    script_e = BooleanField(lazy_gettext('Script Languages'))
-    script = TextField(lazy_gettext('Specify'))
-    prog_e = BooleanField(lazy_gettext('System Programming Languages'))
-    prog = TextField(lazy_gettext('Specify'))
-    other_e = BooleanField(lazy_gettext('Other(s)2'))
-    other = TextField(lazy_gettext('Specify'))
-    submit = SubmitField(lazy_gettext('Next'))
-
-
 class Integration(RadioForm):
-    """Q13/I1"""
+    """Q9/I1"""
     options = RadioField('', choices=[
         ('distinct_wfms ', lazy_gettext('Yes, I have used distinct Workflow Management Systems')),
         ('distinct_script', lazy_gettext('Yes, I have used distinct Script Languages')),
@@ -280,8 +273,63 @@ class Integration(RadioForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
+class Likelyhood(RadioForm):
+    """Q10/I2"""
+    options = RadioField('', choices=[
+        ('1', lazy_gettext('Not at all likely')),
+        ('2', lazy_gettext('Slightly likely')),
+        ('3', lazy_gettext('Moderately likely')),
+        ('4', lazy_gettext('Very likely')),
+        ('5', lazy_gettext('Completely likely')),
+    ])
+    submit = SubmitField(lazy_gettext('Next'))
+
+
+class Analysis(RadioForm):
+    """Q10/A1"""
+    options = RadioField('', choices=[
+        ('yes', lazy_gettext('Yes')),
+        ('no', lazy_gettext('No')),
+        ('what_is_provenance', lazy_gettext('I do not know what is provenance'))
+    ])
+    submit = SubmitField(lazy_gettext('Next'))
+
+
+class AnalysisReasons(CheckForm):
+    """Q12/A2"""
+    comprehensive_2 = BooleanField(lazy_gettext('I value it for comprehending the experiment'))
+    reproducibility_2 = BooleanField(lazy_gettext('I value it for reproducing the experiment'))
+    no_time_1 = BooleanField(lazy_gettext('I value it, but I do not have time for analyses'))
+    no_tools_1 = BooleanField(lazy_gettext('I value it, but I do not have the appropriate tools'))
+    no_knowledge_1 = BooleanField(lazy_gettext('I value it, but I do not have enough knowledge'))
+    no_utility_0 = BooleanField(lazy_gettext('I do not see any utility in provenance analysis'))
+    other_e = BooleanField(lazy_gettext('Other(s)'))
+    other = TextField(lazy_gettext('Specify'))
+    submit = SubmitField(lazy_gettext('Next'))
+
+
+class AnalysisTools(CheckForm):
+    """Q13/A3"""
+    SQL = BooleanField(lazy_gettext('SQL'))
+    Prolog = BooleanField(lazy_gettext('Prolog'))
+    Datalog = BooleanField(lazy_gettext('Datalog'))
+    SPARQL = BooleanField(lazy_gettext('SPARQL'))
+    XQuery = BooleanField(lazy_gettext('XQuery'))
+    XPath = BooleanField(lazy_gettext('XPath'))
+    wfms_e = BooleanField(lazy_gettext('Workflow Management Systems'))
+    wfms = TextField(lazy_gettext('Specify'))
+    script_e = BooleanField(lazy_gettext('Script Languages'))
+    script = TextField(lazy_gettext('Specify'))
+    prog_e = BooleanField(lazy_gettext('System Programming Languages'))
+    prog = TextField(lazy_gettext('Specify'))
+    other_e = BooleanField(lazy_gettext('Other(s)2'))
+    other = TextField(lazy_gettext('Specify'))
+    submit = SubmitField(lazy_gettext('Next'))
+
+
+
 class YesNo(RadioForm):
-    """Q14/I2, Q15/I3, Q16/I4, Q17/F1, Q18/F2"""
+    """Q11/I3, Q14/A4, Q15/A5, Q16/C1, Q17/C2"""
     options = RadioField('', choices=[
         ('yes', lazy_gettext('Yes')),
         ('no', lazy_gettext('No')),
@@ -290,7 +338,7 @@ class YesNo(RadioForm):
 
 
 class EmailForm(TextForm):
-    """Q19/F3"""
+    """Q18/F3"""
     email = TextField('', [
         DataRequired(lazy_gettext('You must specify the email!')),
         Email(lazy_gettext('The email must be valid!')),
