@@ -184,7 +184,7 @@ class Tools(CheckForm):
     limit = 3
     _categories = lambda c: OrderedDict([
         (lazy_gettext("Workflow Management Systems"), [
-            "askalon", "esci_central", "galaxy", "kepler", "pegasus",
+            "askalon", "chiron", "esci_central", "galaxy", "kepler", "pegasus",
             "scicumulus", "swift", "taverna", "vistrails",
         ]),
         (lazy_gettext("Script Languages"), [
@@ -200,6 +200,7 @@ class Tools(CheckForm):
     ])
 
     askalon = BooleanField(lazy_gettext('Askalon'))
+    chiron = BooleanField(lazy_gettext('Chiron'))
     esci_central = BooleanField(lazy_gettext('e-Science Central'))
     galaxy = BooleanField(lazy_gettext('Galaxy'))
     kepler = BooleanField(lazy_gettext('Kepler'))
