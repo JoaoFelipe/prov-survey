@@ -59,6 +59,11 @@ def form(number, next_question, title, options=None):
     )
 
 
+def set_title(title):
+    """Just return title. Override this function to capture titles"""
+    return title
+
+
 @set_navbar(9)
 def index():
     """First page"""
@@ -82,35 +87,35 @@ def index():
 @survey_question('index', 8)
 def p1():
     """Q1/P1"""
-    title = gettext('What is your educational level?')
+    title = set_title(gettext('What is your educational level?'))
     return form('p1', 'p2', title)
 
 
 @survey_question('p1', 8)
 def p2():
     """Q2/P2"""
-    title = gettext('How many scientific experiments have you ever performed on computational environments?')
+    title = set_title(gettext('How many scientific experiments have you ever performed on computational environments?'))
     return form('p2', (lambda: 'p3' if option('p2') != '0' else 'finish'), title)
 
 
 @survey_question('p2', 7)
 def p3():
     """Q3/P3"""
-    title = gettext('What are your scientific domains? (check all that apply)')
+    title = set_title(gettext('What are your scientific domains? (check all that apply)'))
     return form('p3', 'p4', title)
 
 
 @survey_question('p3', 7)
 def p4():
     """Q4/P4"""
-    title = gettext('How much experience do you have in running scientific experiments on computational environments?')
+    title = set_title(gettext('How much experience do you have in running scientific experiments on computational environments?'))
     return form('p4', 'p5', title)
 
 
 @survey_question('p4', 6)
 def p5():
     """Q5/P5"""
-    title = gettext('In which roles have you performed computational experiments? (check all that apply)')
+    title = set_title(gettext('In which roles have you performed computational experiments? (check all that apply)'))
     return form('p5', 't1', title)
 
 
@@ -132,7 +137,7 @@ def t1_answers():
 @survey_question('p5', 6)
 def t1():
     """Q6/T1"""
-    title = gettext('What are your preferred/more often used tools you use to run experiments? (check up to 3 tools)')
+    title = set_title(gettext('What are your preferred/more often used tools you use to run experiments? (check up to 3 tools)'))
     def redir():
         t1_ans = t1_answers()
         if len(t1_ans) <= 1:
@@ -148,7 +153,7 @@ def t1():
 @survey_question('t1', 5)
 def t2():
     """Q7/T2"""
-    title = gettext('Which is your favorite tool for developing and running scientific experiments?')
+    title = set_title(gettext('Which is your favorite tool for developing and running scientific experiments?'))
     t1_ans = t1_answers()
     if len(t1_ans) <= 1:
         erase(['t2', 't3'])
@@ -161,7 +166,7 @@ def t2():
 @survey_question('t2', 5)
 def t3():
     """Q8/T3"""
-    title = gettext('What are the reasons for your preference? (check all that apply)')
+    title = set_title(gettext('What are the reasons for your preference? (check all that apply)'))
     if answer('t2').get('options', {}) and option('t2', 'no') in {'no', 'None'}:
         erase('t3')
         return goto('i1')
@@ -171,28 +176,28 @@ def t3():
 @survey_question('t1', 4)
 def i1():
     """Q9/I1"""
-    title = gettext('Have you ever used more than one tool in a single experiment?')
+    title = set_title(gettext('Have you ever used more than one tool in a single experiment?'))
     return form('i1', 'i2', title)
 
 
 @survey_question('i1', 4)
 def i2():
     """Q10/I2"""
-    title = gettext('Consider a collaborative science scenario where two teams execute variations of a given experiment and perform a joint analysis of these experiments, by comparing result data, methods, duration, and/or used parameters. In your experience, how likely is this scenario going to manifest itself in practice?')
+    title = set_title(gettext('Consider a collaborative science scenario where two teams execute variations of a given experiment and perform a joint analysis of these experiments, by comparing result data, methods, duration, and/or used parameters. In your experience, how likely is this scenario going to manifest itself in practice?'))
     return form('i2', 'a1', title)
 
 
 @survey_question('i2', 3)
 def a1():
     """Q11/A1"""
-    title = gettext('Have you ever analyzed provenance from your experiments?')
+    title = set_title(gettext('Have you ever analyzed provenance from your experiments?'))
     return form('a1', 'a2', title)
 
 
 @survey_question('a1', 3)
 def a2():
     """Q12/A2"""
-    title = gettext('What value if any do you seek from provenance analysis? (check all that apply)')
+    title = set_title(gettext('What value if any do you seek from provenance analysis? (check all that apply)'))
     if option('a1', '') in {'what_is_provenance',}:
         erase(['a2', 'a3', 'a4', 'a5'])
         return goto('c1')
@@ -202,7 +207,7 @@ def a2():
 @survey_question('a2', 2)
 def a3():
     """Q13/A3"""
-    title = gettext('Which tools/languages have you ever used to analyze provenance? (check all that apply)')
+    title = set_title(gettext('Which tools/languages have you ever used to analyze provenance? (check all that apply)'))
     if option('a1', '') in {'what_is_provenance',}:
         erase(['a2', 'a3', 'a4', 'a5'])
         return goto(last(ORDER))
@@ -215,14 +220,14 @@ def a3():
 @survey_question('a3', 2)
 def a4():
     """Q14/A4"""
-    title = gettext('Have you ever analyzed (or had to analyze) two or more provenance databases generated by variations of a given experiment together? This includes both the case of different teams running the experiments independently, as well as a single experimenter working on variants of an experiment.')
+    title = set_title(gettext('Have you ever analyzed (or had to analyze) two or more provenance databases generated by variations of a given experiment together? This includes both the case of different teams running the experiments independently, as well as a single experimenter working on variants of an experiment.'))
     return form('a4', 'a5', title)
 
 
 @survey_question('a4', 2)
 def a5():
     """Q15/A5"""
-    title = gettext('These experiments were executed in different tools?')
+    title = set_title(gettext('These experiments were executed in different tools?'))
     if option('a4') == 'no':
         erase('a5')
         return goto('c1')
@@ -232,21 +237,21 @@ def a5():
 @survey_question('a1', 1)
 def c1():
     """Q16/C1"""
-    title = gettext('Would you accept being contacted about the possibility of participating in a practical experimental study about integrated provenance analysis? The study is in the context of a PhD thesis about provenance integration.')
+    title = set_title(gettext('Would you accept being contacted about the possibility of participating in a practical experimental study about integrated provenance analysis? The study is in the context of a PhD thesis about provenance integration.'))
     return form('c1', 'c2', title)
 
 
 @survey_question('c1', 1)
 def c2():
     """Q17/C2"""
-    title = gettext('Would you accept being contacted to clarify some details about the answers you provided in this survey?')
+    title = set_title(gettext('Would you accept being contacted to clarify some details about the answers you provided in this survey?'))
     return form('c2', 'c3', title)
 
 
 @survey_question('c2', 1)
 def c3():
     """Q18/C3"""
-    title = gettext('Please, enter your email so we can contact you.')
+    title = set_title(gettext('Please, enter your email so we can contact you.'))
     if all(option(x) != 'yes' for x in ['c1', 'c2']):
         erase('c3')
         return goto('finish')

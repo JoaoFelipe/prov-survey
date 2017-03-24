@@ -24,6 +24,14 @@ class Form(FlaskForm):
                 if value.field_class is not SubmitField]
 
     @classmethod
+    def survey_unbound_fields(cls):
+        """Return form fields"""
+        return [attr
+                for attr, value in cls._unbound_fields or cls.__dict__.items()
+                if isinstance(value, UnboundField)
+                if value.field_class is not SubmitField]
+
+    @classmethod
     def survey_field_answer(cls, field, answer, raw=False):  # pylint: disable=unused-argument
         """Return field answer as str"""
         if field not in answer:

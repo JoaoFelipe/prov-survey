@@ -2,7 +2,7 @@
 from io import StringIO
 from itertools import groupby
 
-from flask import Blueprint, session, request, current_app
+from flask import Blueprint, session, request, current_app, jsonify
 from flask_babel import lazy_gettext
 from flask_mail import Message
 
@@ -100,3 +100,53 @@ def question(lang, number):
     if hasattr(survey, number):
         return getattr(survey, number)()
     return goto(last(survey.ORDER))
+
+
+@frontend.route('/translation/<lang>/')
+def translation(lang):
+    """Create json with translations"""
+    from collections import OrderedDict
+    languages = current_app.config['LANGUAGES']
+    session['s_lang'] = lang if lang in languages else 'en'
+
+    result = OrderedDict()
+    result["_order"] = []
+    old_set_title = survey.set_title
+    tit = ''
+    def set_title(title):
+        """Custom set title"""
+        nonlocal tit
+        tit = title
+        return old_set_title(title)
+    survey.set_title = set_title
+    for qnum, form in survey.FORMS.items():
+        result["_order"].append(qnum)
+        tit = ''
+        result[qnum] = {}
+        getattr(survey, qnum)()
+        result[qnum]['title'] = tit
+        session['s_' + qnum] = True
+        session['s_' + qnum + '_a'] = {}
+        result[qnum]['answers'] = OrderedDict()
+        result[qnum]['answer_order'] = []
+        fields_e = []
+        for field in form.survey_unbound_fields():
+            field_obj = getattr(form, field)
+            if field == 'options':
+                for raw, ans in field_obj.kwargs['choices']:
+                    result[qnum]['answer_order'].append(raw)
+                    result[qnum]['answers'][raw] = str(ans)
+            else:
+                if field.endswith('_e'):
+                    fields_e.append(field)
+                else:
+                    result[qnum]['answer_order'].append(field)
+                result[qnum]['answers'][field] = str(field_obj.args[0])
+
+        for field_e in fields_e:
+            field = field_e[:-2]
+            result[qnum]['answers'][field] = result[qnum]['answers'][field_e]
+            del result[qnum]['answers'][field_e]
+
+    survey.set_title = old_set_title
+    return jsonify(result)
