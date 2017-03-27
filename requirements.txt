@@ -8,3 +8,4 @@ flask-sqlalchemy
 flask-script
 flask-migrate
 flask-mail
+pycountry

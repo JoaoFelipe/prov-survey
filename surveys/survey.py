@@ -18,6 +18,7 @@ from .helper import option, set_navbar, survey_question, save_answer
 
 from .forms import StartForm, NextForm
 from .forms import Education, ExperimentCount, Domains, Experience, Situations
+from .forms import Country, Institution
 from .forms import Tools, Preference, PreferenceReasons
 from .forms import Integration, Likelyhood
 from .forms import Analysis, AnalysisReasons, AnalysisTools
@@ -29,6 +30,7 @@ FORMS = OrderedDict([
     ('p3', Domains),
     ('p4', Experience),
     ('p5', Situations),
+    ('p6', Country),
     ('t1', Tools),
     ('t2', Preference),
     ('t3', PreferenceReasons),
@@ -42,6 +44,7 @@ FORMS = OrderedDict([
     ('c1', YesNo),
     ('c2', YesNo),
     ('c3', EmailForm),
+    ('p7', Institution),
 ])
 
 ORDER = [x.upper() for x in FORMS.keys()] + ['finish']
@@ -116,8 +119,13 @@ def p4():
 def p5():
     """Q5/P5"""
     title = set_title(gettext('In which roles have you performed computational experiments? (check all that apply)'))
-    return form('p5', 't1', title)
+    return form('p5', 'p6', title)
 
+@survey_question('p5', 6)
+def p6():
+    """NQ1/P6"""
+    title = set_title(gettext('What is your country of residence?'))
+    return form('p6', 't1', title)
 
 def t1_answers():
     ans = answer('t1')
@@ -134,7 +142,7 @@ def t1_answers():
     return items
 
 
-@survey_question('p5', 6)
+@survey_question('p6', 6)
 def t1():
     """Q6/T1"""
     title = set_title(gettext('What are your preferred/more often used tools you use to run experiments? (check up to 3 tools)'))
@@ -254,9 +262,14 @@ def c3():
     title = set_title(gettext('Please, enter your email so we can contact you.'))
     if all(option(x) != 'yes' for x in ['c1', 'c2']):
         erase('c3')
-        return goto('finish')
-    return form('c3', 'finish', title)
+        return goto('p7')
+    return form('c3', 'p7', title)
 
+@survey_question([('c2', 'c3')], 1)
+def p7():
+    """NQ2/P7"""
+    title = set_title(gettext('What is the name of your institution and what role do you play in it? [Optional]'))
+    return form('p7', 'finish', title)
 
 @set_navbar(lazy_gettext('Thank you'))
 def finish():

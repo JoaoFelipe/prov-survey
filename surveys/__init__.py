@@ -46,7 +46,8 @@ def create_app(configfile=None):
     # Because we're security-conscious developers, we also hard-code disabling
     # the CDN support (this might become a default in later versions):
     app.config['BOOTSTRAP_SERVE_LOCAL'] = True
-
+    app.config['JSON_AS_ASCII'] = False
+    app.config['JSON_SORT_KEYS'] = False
     # We initialize the navigation as well
     nav.init_app(app)
     init_custom_nav_renderer(app)

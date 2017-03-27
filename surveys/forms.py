@@ -5,13 +5,13 @@ from collections import OrderedDict
 from flask_babel import lazy_gettext, gettext
 
 from wtforms.fields import SubmitField, TextField, BooleanField
-from wtforms.fields import RadioField
+from wtforms.fields import RadioField, SelectField
 from wtforms.fields.core import UnboundField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import Email, DataRequired
 from flask_wtf import FlaskForm
 
-
+import pycountry
 
 class Form(FlaskForm):
     """Survey Form BaseClass"""
@@ -187,6 +187,26 @@ class Situations(CheckForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
+class CountrySelectField(SelectField):
+    def __init__(self, *args, **kwargs):
+        super(CountrySelectField, self).__init__(*args, **kwargs)
+        self.choices = (
+            [("", "")] +
+            sorted(
+                [(country.alpha_3, "{}".format(country.name))
+                 for country in pycountry.countries],
+                key=lambda e: e[1]
+            )
+
+        )
+
+class Country(TextForm):
+    """Q/P6"""
+    country = CountrySelectField('')
+    submit = SubmitField(lazy_gettext('Next'))
+
+
+
 class Tools(CheckForm):
     """Q6/T1"""
     limit = 3
@@ -352,4 +372,10 @@ class EmailForm(TextForm):
         DataRequired(lazy_gettext('You must specify the email!')),
         Email(lazy_gettext('The email must be valid!')),
     ])
+    submit = SubmitField(lazy_gettext('Next'))
+
+class Institution(TextForm):
+    """Q/P7"""
+    institution = TextField(lazy_gettext('Institution'))
+    role = TextField(lazy_gettext('Role'))
     submit = SubmitField(lazy_gettext('Finish'))
