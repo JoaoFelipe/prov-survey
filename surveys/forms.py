@@ -5,7 +5,7 @@ from collections import OrderedDict
 from flask_babel import lazy_gettext, gettext
 
 from wtforms.fields import SubmitField, TextField, BooleanField
-from wtforms.fields import RadioField, SelectField
+from wtforms.fields import RadioField, SelectField, TextAreaField
 from wtforms.fields.core import UnboundField
 from wtforms.fields.html5 import EmailField
 from wtforms.validators import Email, DataRequired
@@ -378,4 +378,9 @@ class Institution(TextForm):
     """Q/P7"""
     institution = TextField(lazy_gettext('Institution'))
     role = TextField(lazy_gettext('Role'))
+    submit = SubmitField(lazy_gettext('Next'))
+
+class Comments(TextForm):
+    """Q/P8"""
+    comment = TextAreaField('')
     submit = SubmitField(lazy_gettext('Finish'))

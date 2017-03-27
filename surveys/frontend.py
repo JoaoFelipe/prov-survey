@@ -75,6 +75,7 @@ def send(lang, receiver):
     csvfile = StringIO()
     create_csv(csvfile, survey.FORMS, sep=',', internal_sep=';', raw=raw)
     csvfile.seek(0)
+
     if current_app.config['MAIL_USERNAME'] is None:
         return '<br>'.join(csvfile.readlines())
 
@@ -111,22 +112,11 @@ def translation(lang):
 
     result = OrderedDict()
     result["_order"] = []
-    old_set_title = survey.set_title
-    tit = ''
-    def set_title(title):
-        """Custom set title"""
-        nonlocal tit
-        tit = title
-        return old_set_title(title)
-    survey.set_title = set_title
     for qnum, form in survey.FORMS.items():
         result["_order"].append(qnum)
         tit = ''
         result[qnum] = {}
-        getattr(survey, qnum)()
-        result[qnum]['title'] = tit
-        session['s_' + qnum] = True
-        session['s_' + qnum + '_a'] = {}
+        result[qnum]['title'] = survey.TITLES[qnum]
         result[qnum]['answers'] = OrderedDict()
         result[qnum]['answer_order'] = []
         fields_e = []
@@ -148,5 +138,4 @@ def translation(lang):
             result[qnum]['answers'][field] = result[qnum]['answers'][field_e]
             del result[qnum]['answers'][field_e]
 
-    survey.set_title = old_set_title
     return jsonify(result)
