@@ -659,7 +659,7 @@ msgstr ""
 "most used to design, execute, and analyze scientific experiments. For "
 "this, we would like to invite you to collaborate by answering a "
 "questionnaire with multiple choice options. Some questions require "
-"additional information. The estimated time for answering is around 8 "
+"additional information. The estimated time for answering is around 5 "
 "minutes. This survey was designed by PhD students of Computing Science "
 "from Universidade Federal Fluminense (UFF)."
 

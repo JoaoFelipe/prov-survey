@@ -704,7 +704,7 @@ msgstr ""
 "experimentos científicos. Para isso, gostaríamos da sua colaboração, "
 "preenchendo um questionário composto por questões de múltipla escolha. "
 "Algumas questões requerem alguma informação adicional. O tempo estimado "
-"de preenchimento é 8 minutos. Este questionário foi elaborado por alunos "
+"de preenchimento é 5 minutos. Este questionário foi elaborado por alunos "
 "do curso de Doutorado em Computação da Universidade Federal Fluminense "
 "(UFF)."
 

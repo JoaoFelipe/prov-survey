@@ -89,7 +89,7 @@ def form(number, next_question, title, options=None):
     )
 
 
-@set_navbar(9)
+@set_navbar(6)
 def index():
     """First page"""
     lang = session['s_lang']
@@ -109,41 +109,41 @@ def index():
     return render_template('index.html', form=form)
 
 
-@survey_question('index', 8)
+@survey_question('index', 5)
 def p1():
     """Q1/P1"""
     title = TITLES['p1']
     return form('p1', 'p2', title)
 
 
-@survey_question('p1', 8)
+@survey_question('p1', 5)
 def p2():
     """Q2/P2"""
     title = TITLES['p2']
     return form('p2', (lambda: 'p3' if option('p2') != '0' else 'finish'), title)
 
 
-@survey_question('p2', 7)
+@survey_question('p2', 5)
 def p3():
     """Q3/P3"""
     title = TITLES['p3']
     return form('p3', 'p4', title)
 
 
-@survey_question('p3', 7)
+@survey_question('p3', 5)
 def p4():
     """Q4/P4"""
     title = TITLES['p4']
     return form('p4', 'p5', title)
 
 
-@survey_question('p4', 6)
+@survey_question('p4', 5)
 def p5():
     """Q5/P5"""
     title = TITLES['p5']
     return form('p5', 'p6', title)
 
-@survey_question('p5', 6)
+@survey_question('p5', 5)
 def p6():
     """NQ1/P6"""
     title = TITLES['p6']
@@ -164,7 +164,7 @@ def t1_answers():
     return items
 
 
-@survey_question('p6', 6)
+@survey_question('p6', 4)
 def t1():
     """Q6/T1"""
     title = TITLES['t1']
@@ -180,7 +180,7 @@ def t1():
     return form('t1', redir, title)
 
 
-@survey_question('t1', 5)
+@survey_question('t1', 4)
 def t2():
     """Q7/T2"""
     title = TITLES['t2']
@@ -193,7 +193,7 @@ def t2():
     return form('t2', 't3', title, options=options)
 
 
-@survey_question('t2', 5)
+@survey_question('t2', 4)
 def t3():
     """Q8/T3"""
     title = TITLES['t3']
@@ -203,14 +203,14 @@ def t3():
     return form('t3', 'i1', title)
 
 
-@survey_question('t1', 4)
+@survey_question('t1', 3)
 def i1():
     """Q9/I1"""
     title = TITLES['i1']
     return form('i1', 'i2', title)
 
 
-@survey_question('i1', 4)
+@survey_question('i1', 3)
 def i2():
     """Q10/I2"""
     title = TITLES['i2']
@@ -224,7 +224,7 @@ def a1():
     return form('a1', 'a2', title)
 
 
-@survey_question('a1', 3)
+@survey_question('a1', 2)
 def a2():
     """Q12/A2"""
     title = TITLES['a2']
