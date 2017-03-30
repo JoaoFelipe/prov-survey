@@ -110,7 +110,7 @@ def send(lang, receiver):
 
             return "<br>".join(output)
         except:
-            return format_exc.format_exc().replace("\n", "<br>")
+            return traceback.format_exc().replace("\n", "<br>")
 
     if current_app.config['MAIL_USERNAME'] is None:
         return '<br>'.join(csvfile.readlines())
