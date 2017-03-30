@@ -1,5 +1,8 @@
 """Navbar and routes"""
+import subprocess
+import traceback
 from io import StringIO
+from os.path import join, expanduser
 from itertools import groupby
 
 from flask import Blueprint, session, request, current_app, jsonify
@@ -75,6 +78,39 @@ def send(lang, receiver):
     csvfile = StringIO()
     create_csv(csvfile, survey.FORMS, sep=',', internal_sep=';', raw=raw)
     csvfile.seek(0)
+
+    if receiver == "github":
+        try:
+            output = []
+            github_path = expanduser(current_app.config["GITHUB"])
+            csv_path = join(github_path, "..", "survey_result.csv")
+            with open(csv_path, "w") as csv:
+                csv.write(csvfile.read())
+            output.append("Wrote survey_result.csv")
+
+            output.append("Pulling GitHub repository")
+            pull = subprocess.check_output(["git", "pull"], cwd=github_path)
+            output.append(pull.decode("utf-8"))
+            survey_analysis_path = join(github_path, "survey_analysis")
+            nbconvert = subprocess.check_output([
+                "jupyter", "nbconvert",
+                "--to", "notebook",
+                "--output", "Automatic.ipynb",
+                "--execute",
+                "Analysis.ipynb"
+            ], cwd=survey_analysis_path)
+            output.append("Converting notebook to html")
+            output.append(nbconvert.decode("utf-8"))
+            output.append("Commiting changes")
+            commit = subprocess.check_output([
+                "git", "commit", "-am", "Automatic generation"], cwd=github_path)
+            output.append(commit.decode("utf-8"))
+            output.append("Pushing GitHub repository")
+            pull = subprocess.check_output(["git", "push"], cwd=github_path)
+
+            return "<br>".join(output)
+        except:
+            return format_exc.format_exc().replace("\n", "<br>")
 
     if current_app.config['MAIL_USERNAME'] is None:
         return '<br>'.join(csvfile.readlines())

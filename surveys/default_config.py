@@ -26,6 +26,8 @@ MAIL_USE_SSL = bool(int(env('EMAIL_USE_SSL', 1)))
 MAIL_USERNAME = env('EMAIL_USERNAME')
 MAIL_PASSWORD = env('EMAIL_PASSWORD')
 
+GITHUB = env('GITHUB', '~/script-analysis')
+
 gmail = 'gmail.com'
 newcastle = 'newcastle.ac.uk'
 CONTACTS = {
