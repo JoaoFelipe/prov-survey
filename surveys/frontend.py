@@ -81,6 +81,9 @@ def send(lang, receiver):
 
     if receiver == "github":
         try:
+            import nbformat
+            from nbconvert.preprocessors import ExecutePreprocessor
+
             output = []
             github_path = expanduser(current_app.config["GITHUB"])
             csv_path = join(github_path, "..", "survey_result.csv")
@@ -91,7 +94,16 @@ def send(lang, receiver):
             output.append("Pulling GitHub repository")
             pull = subprocess.check_output(["git", "pull"], cwd=github_path)
             output.append(pull.decode("utf-8"))
+            output.append("Converting notebook to html")
             survey_analysis_path = join(github_path, "survey_analysis")
+            with open(join(survey_analysis_path, "Analysis.ipynb")) as f:
+                nb = nbformat.read(f, 4)
+            ep = ExecutePreprocessor()
+            ep.preprocess(nb, {'metadata': {'path': survey_analysis_path}})
+            with open(join(survey_analysis_path, 'Automatic.ipynb'), 'wt') as f:
+                nbformat.write(nb, f)
+
+            '''
             nbconvert = subprocess.check_output([
                 "jupyter", "nbconvert",
                 "--to", "notebook",
@@ -99,8 +111,9 @@ def send(lang, receiver):
                 "--execute",
                 "Analysis.ipynb"
             ], cwd=survey_analysis_path)
-            output.append("Converting notebook to html")
+
             output.append(nbconvert.decode("utf-8"))
+            '''
             output.append("Commiting changes")
             commit = subprocess.check_output([
                 "git", "commit", "-am", "Automatic generation"], cwd=github_path)
