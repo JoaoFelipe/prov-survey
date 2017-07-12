@@ -17,7 +17,7 @@ def create_csv(csvfile, forms, sep=';', internal_sep=',', raw=True):
     writer = csv.writer(csvfile, delimiter=sep)
     writer.writerow(
         ['uid'] + list(forms.keys()) +
-        ['first', 'last', 'time', 'finished', 'language']
+        ['first', 'last', 'time', 'finished', 'language', 'origin']
     )
 
     uids = list(db.session.query(Answer.uid).distinct())
@@ -42,7 +42,8 @@ def create_csv(csvfile, forms, sep=';', internal_sep=',', raw=True):
             Counter(
                 next(answers).lang
                 for _, answers in groupby(user_answers, lambda x: x.question)
-            ).most_common()[0][0]
+            ).most_common()[0][0],
+            uanswers.get('origin', {'submit': 'main'})['submit'],
         ]
         writer.writerow(row)
 

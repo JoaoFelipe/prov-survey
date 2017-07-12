@@ -98,10 +98,14 @@ def index():
         if form.submit.data:
             if 's_uid' in session:
                 save_answer('finish', {'submit': 'restart'})
+            origin = session.get('s_origin', 'main')
             session.clear()
+            session['s_origin'] = origin
             session['s_lang'] = lang
             session['s_index'] = True
             session['s_uid'] = binascii.hexlify(os.urandom(24))
+
+            save_answer('origin', {'submit': origin})
             save_answer('index', {'submit': 'yes'})
             # ToDo: save
         session['s_p1'] = True
@@ -305,8 +309,10 @@ def finish():
     """Thank you page"""
     save_answer('finish', {'submit': 'final'})
     lang = session['s_lang']
+    origin = session.get('s_origin', 'main')
     session.clear()
     session['s_lang'] = lang
     session['s_minutes'] = gettext('Thank you')
     session['s_url'] = 'finish'
+    session['s_origin'] = origin
     return render_template('finish.html')

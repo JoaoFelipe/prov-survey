@@ -64,6 +64,20 @@ def root():
     """Redirect to ptbr"""
     return goto('index')
 
+@frontend.route('/scipy')
+def scipy():
+    """Redirect to en"""
+    session['s_origin'] = 'scipy'
+    session['s_lang'] = 'en'
+    return goto('index')
+
+@frontend.route('/clear')
+def clear():
+    """Redirect to en"""
+    session.clear()
+    return goto('index')
+
+
 
 @frontend.route('/send/<lang>/<receiver>/')
 def send(lang, receiver):
