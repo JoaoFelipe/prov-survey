@@ -5,6 +5,9 @@
 
 {% block jumbotron %}
   <h3>{{ title }}</h3>
+  {% if sub_template %} 
+    {% include sub_template %}
+  {% endif %}
   {% if form|attr("limit") %}
     <div class="limit"> {{ form.limit }} </div>
   {% endif %}

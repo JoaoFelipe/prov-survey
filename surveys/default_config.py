@@ -41,12 +41,12 @@ CONTACTS = {
 
 
 LANGUAGES = {
-    'en': u'English',
+   # 'en': u'English',
     'ptbr': u'Português',
 }
 
 LANGUAGES_LOCALE = {
-    'en': 'en',
+   # 'en': 'en',
     'ptbr': 'pt_BR',
 }
 

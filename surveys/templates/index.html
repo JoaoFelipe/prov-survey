@@ -4,11 +4,9 @@
 {% import "bootstrap/wtf.html" as wtf %}
 
 {% block jumbotron %}
-  <h1>{{ _('Computational Experiments Survey') }}</h1>
-  <p>{{ _('Hello,') }}</p>
-  <p>{{ _('We are doing a survey to identify computational tools and technologies most used to design, execute, and analyze scientific experiments. For this, we would like to invite you to collaborate by answer a questionnaire with multiple choice options. Some questions require additional information. The estimated time for answering is around XX minutes. This survey was designed by PhD students of Computing Science from Universidade Federal Fluminense (UFF).') }}</p>
+  <h1>{{ _('Estudo experimental') }}</h1>
+  <p>{{ _('Os estudos experimentais procuram avaliar uma determinada abordagem. Existem diversas formas de representar visualmente scripts para melhorar o entendimento sobre eles. Neste experimento, queremos avaliar algumas dessas representações para entender se elas de fato podem ser usadas de forma eficiente para melhorar o entendimento. Esse estudo é conduzido por alunos de Pós-graduação em Computação da Universidade Federal Fluminense (IC-UFF).Espera-se que, como resultado deste estudo, você possa aumentar seus conhecimentos, de maneira a contribuir para o aumento da qualidade das atividades com as quais você trabalhe ou possa vir a trabalhar. Este estudo também contribuirá com resultados importantes para a pesquisa de um modo geral. Você não terá nenhum gasto ou ônus com a sua participação no estudo. Sua contribuição é muito importante para esse estudo. Caso queira participar, por favor, preencha o formulário a seguir: ') }}</p>
   {% autoescape false %}
-  <p>{{ _('Any questions or problems please report to %(wellmor)s or %(jpimentel)s.', wellmor='<a href="mailto:wellmor@ic.uff.br?Subject=Provenance%20Survey" target="_top">wellmor@ic.uff.br</a>', jpimentel='<a href="mailto:jpimentel@ic.uff.br?Subject=Provenance%20Survey" target="_top">jpimentel@ic.uff.br</a>') }}</p>
   {% endautoescape %}
 
   {{wtf.quick_form(form)}}

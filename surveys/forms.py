@@ -4,7 +4,7 @@ from collections import OrderedDict
 
 from flask_babel import lazy_gettext, gettext
 
-from wtforms.fields import SubmitField, TextField, BooleanField
+from wtforms.fields import SubmitField, TextField, BooleanField, IntegerField
 from wtforms.fields import RadioField, SelectField, TextAreaField
 from wtforms.fields.core import UnboundField
 from wtforms.fields.html5 import EmailField
@@ -113,24 +113,7 @@ class NextForm(Form):
     submit = SubmitField(lazy_gettext('Restart'))
     next = SubmitField(lazy_gettext('Next'))
 
-class Education(RadioForm):
-    """Q1/P1"""
-    options = RadioField('', choices=[
-        ('no', lazy_gettext('No schooling completed')),
-        ('primary_progress', lazy_gettext('Primary School in progress')),
-        ('primary', lazy_gettext('Primary School')),
-        ('secondary_progress', lazy_gettext('Secondary Education in progress')),
-        ('secondary', lazy_gettext('Secondary Education')),
-        ('associate_progress', lazy_gettext('Associate degree in progress')),
-        ('associate', lazy_gettext('Associate degree')),
-        ('undergraduate_progress', lazy_gettext('Undergraduate degree in progress')),
-        ('undergraduate', lazy_gettext('Undergraduate degree')),
-        ('masters_progress', lazy_gettext(u'Masters degree in progress')),
-        ('masters', lazy_gettext(u'Masters degree')),
-        ('phd_progress', lazy_gettext('PhD degree in progress')),
-        ('phd', lazy_gettext('PhD degree')),
-    ])
-    submit = SubmitField(lazy_gettext('Next'))
+
 
 
 class ExperimentCount(RadioForm):
@@ -366,19 +349,73 @@ class YesNo(RadioForm):
     submit = SubmitField(lazy_gettext('Next'))
 
 
-class EmailForm(TextForm):
-    """Q18/F3"""
-    email = TextField('', [
-        DataRequired(lazy_gettext('You must specify the email!')),
-        Email(lazy_gettext('The email must be valid!')),
+class Consent(RadioForm):
+    """Q1/C1"""
+    options = RadioField('', choices=[
+        ('yes', lazy_gettext('Sim, eu concordo.')),
+        ('no', lazy_gettext('Não, eu não concordo.')),
     ])
-    submit = SubmitField(lazy_gettext('Next'))
+    submit = SubmitField(lazy_gettext('Próximo'))
 
-class Institution(TextForm):
-    """Q/P7"""
-    institution = TextField(lazy_gettext('Institution'))
-    role = TextField(lazy_gettext('Role'))
-    submit = SubmitField(lazy_gettext('Next'))
+class NameForm(TextForm):
+    """Q2/P1"""
+    name = TextField('', [
+        DataRequired(lazy_gettext('Por favor, preencha o campo nome!')),
+    ])
+    submit = SubmitField(lazy_gettext('Próximo'))
+
+
+class EmailForm(TextForm):
+    """Q3/P2"""
+    email = TextField('', [
+        DataRequired(lazy_gettext('Por favor, especifique o e-mail!')),
+        Email(lazy_gettext('O e-mail deve ser válido!')),
+    ])
+    submit = SubmitField(lazy_gettext('Próximo'))
+
+class Identification(TextForm):
+    """Q4/P3"""
+    name = TextField('', [])
+    submit = SubmitField(lazy_gettext('Próximo'))
+
+class Education(RadioForm):
+    """Q5/P4"""
+    options = RadioField('', choices=[
+        ('no', lazy_gettext('Sem escolaridade')),
+        ('primary_progress', lazy_gettext('Ensino Fundamental em andamento')),
+        ('primary', lazy_gettext('Ensino Fundamental')),
+        ('secondary_progress', lazy_gettext('Ensino Médio em andamento')),
+        ('secondary', lazy_gettext('Ensino Médio')),
+        ('associate_progress', lazy_gettext('Técnico em andamento')),
+        ('associate', lazy_gettext('Técnico')),
+        ('undergraduate_progress', lazy_gettext('Graduação em andamento')),
+        ('undergraduate', lazy_gettext('Graduação')),
+        ('masters_progress', lazy_gettext(u'Mestrado em andamento')),
+        ('masters', lazy_gettext(u'Mestrado')),
+        ('phd_progress', lazy_gettext('Doutorado em andamento')),
+        ('phd', lazy_gettext('Doutorado')),
+    ])
+    submit = SubmitField(lazy_gettext('Próximo'))
+
+
+class YearMonth(TextForm):
+    """Q6/P5"""
+    year = IntegerField(lazy_gettext('Ano'))
+    month  = SelectField(choices=[
+        ("1", lazy_gettext("Janeiro")),
+        ("2", lazy_gettext("Fevereiro")),
+        ("3", lazy_gettext("Março")),
+        ("4", lazy_gettext("Abril")),
+        ("5", lazy_gettext("Maio")),
+        ("6", lazy_gettext("Junho")),
+        ("7", lazy_gettext("Julho")),
+        ("8", lazy_gettext("Agosto")),
+        ("9", lazy_gettext("Setembro")),
+        ("10", lazy_gettext("Outubro")),
+        ("11", lazy_gettext("Novembro")),
+        ("12", lazy_gettext("Dezembro")),
+    ])
+    submit = SubmitField(lazy_gettext('Próximo'))
 
 class Comments(TextForm):
     """Q/P8"""

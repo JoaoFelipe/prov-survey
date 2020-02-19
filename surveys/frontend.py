@@ -66,14 +66,14 @@ def root():
 
 @frontend.route('/scipy')
 def scipy():
-    """Redirect to en"""
+    """Redirect to ptbr"""
     session['s_origin'] = 'scipy'
-    session['s_lang'] = 'en'
+    session['s_lang'] = 'ptbr'
     return goto('index')
 
 @frontend.route('/clear')
 def clear():
-    """Redirect to en"""
+    """Redirect to ptbr"""
     session.clear()
     return goto('index')
 

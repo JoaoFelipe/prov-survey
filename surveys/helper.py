@@ -87,9 +87,11 @@ def erase(numbers):
     db.session.commit()
 
 
-def question(form, title):
+def question(form, title, sub_template=None):
     """Render question template"""
-    return render_template('question.html', form=form, title=title)
+    return render_template(
+        'question.html', form=form, title=title, sub_template=sub_template
+    )
 
 
 def question_url(number=None, lang=None):
@@ -115,7 +117,10 @@ def local_view(text, number=None, lang=None):
     return View(text, '.question', lang=lang, number=number)
 
 
-def question_form(number, next_question, form_class, title, alternative=None, options=None):
+def question_form(
+    number, next_question, form_class, title, alternative=None, options=None,
+    sub_template=None
+):
     """Process GET and POST of a question form"""
     alternative = alternative or (lambda form: False)
     answer = 's_{}_a'.format(number)
@@ -133,15 +138,15 @@ def question_form(number, next_question, form_class, title, alternative=None, op
         save_answer(number)
         # ToDo: save
         return goto(next_question)
-    return question(form, title)
+    return question(form, title, sub_template=sub_template)
 
 
-def radio_question(number, next_question, form_class, title, options=None):
+def radio_question(number, next_question, form_class, title, options=None, sub_template=None):
     """Process GET and POST of a radio question form. Support empty question"""
     return question_form(
         number, next_question, form_class, title,
         lambda form: (form.submit.data and form.options.data == 'None'),
-        options=options
+        options=options, sub_template=sub_template
     )
 
 
